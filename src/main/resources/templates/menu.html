@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Sangamesh's Pizza</title>
+
+    <th:block th:if="${_csrf}">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    </th:block>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* [CSS Remains Exactly the Same - No Changes Needed Here] */
+        :root { --bg-neutral: #F4F1ED; --brand-tomato: #C0392B; --brand-dark: #2C3E50; --action-green: #2E7D32; --glass-bg: rgba(255, 255, 255, 0.95); }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-neutral); color: var(--brand-dark); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(12px); padding: 15px 5%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--brand-dark); text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--brand-tomato); }
+        .logout-btn { border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important; padding: 6px 20px; border-radius: 25px; transition: 0.3s; }
+        .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
+        .page-header { margin-top: 100px; padding: 40px 20px; text-align: center; background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%); }
+        .page-header h1 { font-family: 'Oswald', sans-serif; font-size: 3rem; color: var(--brand-dark); text-transform: uppercase; margin-bottom: 20px; }
+        .search-box { position: relative; max-width: 500px; margin: 0 auto; }
+        .search-box input { width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #ddd; border-radius: 50px; font-size: 1rem; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
+        .search-box input:focus { border-color: var(--brand-tomato); outline: none; }
+        .search-box button { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--brand-tomato); color: white; border: none; padding: 0 25px; border-radius: 40px; cursor: pointer; font-weight: 700; }
+        .controls-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; background: white; padding: 15px 30px; border-radius: 50px; width: fit-content; margin: 0 auto 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .filter-label { font-weight: 800; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .styled-select { border: none; background: transparent; font-weight: 700; color: var(--brand-dark); cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .segmented-control { background: var(--bg-neutral); padding: 5px; border-radius: 30px; display: flex; }
+        .segmented-control input { display: none; }
+        .segmented-control label { padding: 8px 20px; border-radius: 25px; cursor: pointer; font-size: 0.85rem; font-weight: 700; color: #666; transition: 0.3s; }
+        #allBtn:checked + label { background: var(--brand-dark); color: white; }
+        #vegBtn:checked + label { background: var(--action-green); color: white; }
+        #nonVegBtn:checked + label { background: var(--brand-tomato); color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .diet-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; color: white; text-transform: uppercase; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .veg-badge { background: var(--action-green); }
+        .nonveg-badge { background: var(--brand-tomato); }
+        .fav-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .fav-btn:hover { transform: scale(1.1); }
+        .card-body { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+        .header-row { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+        .card-title { margin: 0; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
+        .price-tag { background: var(--brand-tomato); color: white; padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; }
+        .card-desc { color: #777; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        .order-form { background: var(--bg-neutral); padding: 15px; border-radius: 12px; margin-top: auto; }
+        .size-select, .note-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Poppins', sans-serif; margin-bottom: 10px; box-sizing: border-box; }
+        .add-btn { width: 100%; background: var(--action-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .add-btn:hover { background: #1B5E20; }
+        .pagination { display: flex; justify-content: center; gap: 15px; margin-bottom: 60px; }
+        .page-link { background: white; color: var(--brand-dark); padding: 10px 20px; text-decoration: none; border-radius: 30px; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.2s; }
+        .page-link:hover { background: var(--brand-tomato); color: white; }
+        @media (max-width: 768px) { .controls-wrapper { flex-direction: column; width: 90%; gap: 15px; padding: 20px; border-radius: 20px; } .nav-links { display: none; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/menu}" class="active">Menu</a>
+        <a th:href="@{/cart}">Cart</a>
+        <a th:href="@{/orders}">Orders</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div th:if="${!isStoreOpen}" style="margin-top: 80px; background: #c0392b; color: white; text-align: center; padding: 15px; font-weight: 700;">
+    🌙 Our kitchen is closed. Ordering is disabled!
+</div>
+
+<div class="page-header" th:style="${!isStoreOpen ? 'margin-top: 0;' : ''}">
+    <h1 th:text="${category != null ? category + ' Menu' : 'Our Menu'}">Our Menu</h1>
+    <form th:action="@{/menu}" method="get" class="search-box">
+        <input type="text" name="keyword" placeholder="Search for delicious items..." th:value="${keyword}">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+</div>
+
+<div class="controls-wrapper">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="filter-label">Sort:</span>
+        <select id="sortSelect" onchange="applySort()" class="styled-select">
+            <option value="default">Default</option>
+            <option value="priceLow">Price: Low to High</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="name">Name: A-Z</option>
+        </select>
+    </div>
+
+    <div style="border-left: 1px solid #ddd; height: 30px;"></div>
+
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="filter-label">Filter:</span>
+        <div class="segmented-control">
+            <input type="radio" name="diet" id="allBtn" onchange="applyFilters()" checked>
+            <label for="allBtn">All</label>
+
+            <input type="radio" name="diet" id="vegBtn" onchange="applyFilters()">
+            <label for="vegBtn">🌱 Veg</label>
+
+            <input type="radio" name="diet" id="nonVegBtn" onchange="applyFilters()">
+            <label for="nonVegBtn">🍖 Non-Veg</label>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="menuGrid">
+    <div th:if="${pizzas.empty}" style="grid-column: 1 / -1; text-align: center; background: white; padding: 60px; border-radius: 20px;">
+        <i class="fas fa-utensils" style="font-size: 3rem; color: #ddd; margin-bottom: 20px;"></i>
+        <h3 style="color: #555;">No items found.</h3>
+        <a th:href="@{/menu}" style="color: var(--brand-tomato); font-weight: 700; text-decoration: none;">Clear Search</a>
+    </div>
+
+    <div class="card pizza-card"
+         th:each="pizza : ${pizzas}"
+         th:attr="data-veg=${pizza.veg ?: false}, data-price=${pizza.price}, data-name=${pizza.name}">
+
+        <div style="position: relative;">
+            <span th:if="${pizza.veg == true}" class="diet-badge veg-badge">Veg</span>
+            <span th:if="${pizza.veg == false or pizza.veg == null}" class="diet-badge nonveg-badge">Non-Veg</span>
+
+            <button class="fav-btn" th:data-id="${pizza.id}" onclick="toggleFav(this)">
+                <span class="fav-icon" th:text="${session.favorites != null && session.favorites.contains(pizza.id) ? '❤️' : '🤍'}">🤍</span>
+            </button>
+
+            <img th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://via.placeholder.com/300'}" class="card-img" alt="Item">
+        </div>
+
+        <div class="card-body">
+            <div class="header-row">
+                <h3 class="card-title" th:text="${pizza.name}">Pizza Name</h3>
+                <span class="price-tag" th:text="'₹' + ${pizza.price}">₹199</span>
+            </div>
+
+            <p class="card-desc" th:text="${pizza.description}">Description...</p>
+
+            <form th:action="@{'/cart/add/' + ${pizza.id}}" method="post" class="order-form">
+
+                <select name="selectedSize" class="size-select" required>
+                    <option value="" disabled selected>Select Size</option>
+
+                    <option th:if="${pizza.sizes != null}" th:each="entry : ${pizza.sizes}"
+                            th:value="${entry.key}"
+                            th:text="${entry.key} + ' - ₹' + ${entry.value}"></option>
+
+                    <th:block th:if="${pizza.sizes == null or pizza.sizes.isEmpty()}">
+                        <option value="Standard">Standard (Base Price)</option>
+
+                        <th:block th:if="${pizza.category != null and pizza.category.toLowerCase().contains('pizza')}">
+                            <option value="Medium">Medium (+₹70)</option>
+                            <option value="Large">Large (+₹130)</option>
+                        </th:block>
+
+                        <th:block th:unless="${pizza.category != null and pizza.category.toLowerCase().contains('pizza')}">
+                            <option value="Medium">Medium</option>
+                            <option value="Large">Large</option>
+                        </th:block>
+                    </th:block>
+                </select>
+
+                <input type="text" name="note" class="note-input" placeholder="Any special requests?">
+
+                <button type="submit" class="add-btn" th:disabled="${!isStoreOpen}">
+                    Add to Cart <i class="fas fa-plus"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="pagination" th:if="${totalPages > 1}">
+    <a class="page-link" th:if="${currentPage > 0}" th:href="@{/menu(page=${currentPage - 1}, keyword=${keyword}, category=${category})}"><i class="fas fa-chevron-left"></i> Prev</a>
+    <span style="align-self: center; font-weight: 700; color: var(--brand-dark);">
+        Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span>
+    </span>
+    <a class="page-link" th:if="${currentPage + 1 < totalPages}" th:href="@{/menu(page=${currentPage + 1}, keyword=${keyword}, category=${category})}">Next <i class="fas fa-chevron-right"></i></a>
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+<script>
+    // 🟢 CRASH FIX: Safely check if elements exist before reading attributes
+    const csrfMeta = document.querySelector("meta[name='_csrf']");
+    const headerMeta = document.querySelector("meta[name='_csrf_header']");
+
+    // Default headers
+    const headers = {
+        'X-Requested-With': 'XMLHttpRequest'
+    };
+
+    // Only attach token if CSRF is actually enabled
+    if (csrfMeta && headerMeta) {
+        headers[headerMeta.getAttribute("content")] = csrfMeta.getAttribute("content");
+    }
+
+    function applyFilters() {
+        const isVeg = document.getElementById('vegBtn').checked;
+        const isNonVeg = document.getElementById('nonVegBtn').checked;
+        document.querySelectorAll('.pizza-card').forEach(card => {
+            const vegStatus = card.getAttribute('data-veg') === 'true';
+            if (isVeg) card.style.display = vegStatus ? 'flex' : 'none';
+            else if (isNonVeg) card.style.display = !vegStatus ? 'flex' : 'none';
+            else card.style.display = 'flex';
+        });
+    }
+
+    function applySort() {
+        const grid = document.getElementById('menuGrid');
+        const cards = Array.from(grid.querySelectorAll('.pizza-card'));
+        const sortVal = document.getElementById('sortSelect').value;
+
+        cards.sort((a, b) => {
+            const pA = parseFloat(a.getAttribute('data-price'));
+            const pB = parseFloat(b.getAttribute('data-price'));
+            const nA = a.getAttribute('data-name').toLowerCase();
+            const nB = b.getAttribute('data-name').toLowerCase();
+
+            if (sortVal === 'priceLow') return pA - pB;
+            if (sortVal === 'priceHigh') return pB - pA;
+            if (sortVal === 'name') return nA.localeCompare(nB);
+            return 0;
+        });
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    function toggleFav(btn) {
+        const id = btn.getAttribute('data-id');
+
+        fetch('/favorites/toggle/' + id, {
+            method: 'POST',
+            headers: headers // 🟢 Uses the safe headers object we created above
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.querySelector('.fav-icon').innerText = data.isFavorite ? '❤️' : '🤍';
+        })
+        .catch(err => console.error('Error:', err));
+    }
+</script>
+</body>
+</html>

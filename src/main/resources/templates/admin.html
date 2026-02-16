@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Sangamesh's Pizza</title>
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4; /* Light Grey for Admin (easier on eyes) */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            background-color: #333; /* Dark for Admin */
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.2rem; font-weight: bold; color: #e8b852; text-decoration: none; }
+        .logout-btn { background-color: #ff6f61; padding: 8px 15px; border-radius: 5px; color: white; text-decoration: none; font-weight: bold; }
+
+        /* --- DASHBOARD CONTAINER --- */
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+
+        h1 { color: #333; border-bottom: 3px solid #ff6f61; display: inline-block; padding-bottom: 5px; }
+
+        /* --- REVENUE CARD --- */
+        .stats-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: inline-block;
+            margin-bottom: 30px;
+            border-left: 5px solid #28a745;
+        }
+        .stats-card h3 { margin: 0; color: #666; font-size: 1rem; }
+        .stats-card p { margin: 5px 0 0; font-size: 2rem; font-weight: bold; color: #333; }
+
+        /* --- ORDERS TABLE --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+
+        th { background-color: #ff6f61; color: white; text-transform: uppercase; font-size: 0.9rem; }
+
+        tr:hover { background-color: #f9f9f9; }
+
+        /* --- STATUS BADGES --- */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .status-Placed { background-color: #ffeeba; color: #856404; }
+        .status-Cooking { background-color: #b8daff; color: #004085; }
+        .status-Delivered { background-color: #c3e6cb; color: #155724; }
+        .status-Cancelled { background-color: #f5c6cb; color: #721c24; }
+
+        /* --- FORM ELEMENTS --- */
+        select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        .update-btn {
+            background-color: #333; color: white; border: none;
+            padding: 8px 12px; border-radius: 5px; cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .update-btn:hover { background-color: #555; }
+
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin" class="logo">👨‍🍳 ADMIN DASHBOARD</a>
+    <div>
+        <span style="margin-right: 15px;">Welcome, Admin</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="stats-card">
+        <h3>Total Revenue</h3>
+        <p>₹ <span th:text="${totalRevenue}">0.00</span></p>
+    </div>
+
+    <h1>Live Orders</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Order Date</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Current Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${#dates.format(order.orderDate, 'dd-MMM HH:mm')}">Date</td>
+
+            <td>
+                <strong th:text="${order.customerName}">Name</strong><br>
+                <small th:text="${order.address}">Address</small>
+            </td>
+
+            <td>
+                <div th:each="item : ${order.items}">
+                    <span th:text="${item}"></span>
+                </div>
+            </td>
+
+            <td>₹ <span th:text="${order.totalAmount}">0.00</span></td>
+
+            <td>
+                        <span th:class="'status-badge status-' + ${order.status}"
+                              th:text="${order.status}">Placed</span>
+            </td>
+
+            <td>
+                <form th:action="@{/admin/order/update/{id}(id=${order.id})}" method="post" style="display:flex; gap:5px;">
+                    <select name="status">
+                        <option value="Placed" th:selected="${order.status == 'Placed'}">Placed</option>
+                        <option value="Cooking" th:selected="${order.status == 'Cooking'}">Cooking</option>
+                        <option value="Out for Delivery" th:selected="${order.status == 'Out for Delivery'}">Out for Delivery</option>
+                        <option value="Delivered" th:selected="${order.status == 'Delivered'}">Delivered</option>
+                        <option value="Cancelled" th:selected="${order.status == 'Cancelled'}">Cancelled</option>
+                    </select>
+                    <button type="submit" class="update-btn">Update</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

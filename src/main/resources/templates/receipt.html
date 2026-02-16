@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt - Sangamesh's Pizza</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background: #eee; padding: 40px; display: flex; justify-content: center; }
+        .receipt { background: white; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+
+        /* Jagged Edge Effect */
+        .receipt::after {
+            content: ""; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px;
+            background: radial-gradient(circle, transparent, transparent 50%, white 50%, white);
+            background-size: 20px 20px;
+        }
+
+        .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .logo { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+        .meta { font-size: 0.8rem; color: #555; }
+
+        .info { font-size: 0.85rem; margin-bottom: 20px; line-height: 1.4; }
+
+        table { width: 100%; font-size: 0.9rem; border-collapse: collapse; margin-bottom: 20px; }
+        th { text-align: left; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        td { padding: 8px 0; }
+        .qty { text-align: center; }
+        .price { text-align: right; }
+
+        .totals { border-top: 2px dashed #333; padding-top: 10px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+        .grand-total { font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
+
+        .print-btn { display: block; width: 100%; padding: 12px; background: #333; color: white; text-align: center; text-decoration: none; font-weight: bold; margin-top: 30px; border-radius: 5px; cursor: pointer; font-family: sans-serif; }
+        .back-link { display: block; text-align: center; margin-top: 15px; font-size: 0.8rem; color: #666; text-decoration: none; font-family: sans-serif; }
+
+        @media print { .print-btn, .back-link { display: none; } body { background: white; } .receipt { box-shadow: none; } }
+    </style>
+</head>
+<body>
+
+<div class="receipt">
+    <div class="header">
+        <div class="logo">🍕 SANGAMESH'S PIZZA</div>
+        <div class="meta">Order #<span th:text="${order.id}"></span></div>
+        <div class="meta" th:text="${#dates.format(order.orderDate, 'dd-MMM-yyyy HH:mm')}"></div>
+    </div>
+
+    <div class="info">
+        <strong>Customer:</strong> <span th:text="${order.customerName}"></span><br>
+        <strong>Address:</strong> <span th:text="${order.address}"></span>
+    </div>
+
+    <table>
+        <thead><tr><th>Item</th><th class="qty">Qty</th><th class="price">Amt</th></tr></thead>
+        <tbody>
+        <tr th:each="itemStr : ${order.items}" th:with="parts=${#strings.arraySplit(itemStr, '|')}">
+            <td th:text="${parts[0]}">Pizza</td> <td class="qty" th:text="${#strings.replace(parts[1], 'Qty: ', '')}">1</td> <td class="price" th:text="'₹' + ${#strings.replace(parts[2], '₹', '')}">199</td> </tr>
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="row"><span>Subtotal</span><span th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount / 1.05, 1, 2)}"></span></div>
+        <div class="row"><span>Tax (5%)</span><span th:text="'₹' + ${#numbers.formatDecimal((order.totalAmount / 1.05) * 0.05, 1, 2)}"></span></div>
+        <div class="row grand-total"><span>TOTAL</span><span th:text="'₹' + ${order.totalAmount}"></span></div>
+    </div>
+
+    <p style="text-align: center; font-size: 0.8rem; margin-top: 30px;">Thank you for your order!</p>
+
+    <a href="#" onclick="window.print()" class="print-btn">Print Receipt</a>
+    <a th:href="@{/orders}" class="back-link">← Back to Orders</a>
+</div>
+
+</body>
+</html>

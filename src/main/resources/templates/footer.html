@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body th:fragment="customerFooter">
+
+<div th:if="${cart != null && cart.totalQuantity > 0}" class="cart-floating-bar">
+    <div class="cart-info">
+        <span class="count-box" th:text="${cart.totalQuantity} + ' ITEMS'">2 ITEMS</span>
+        <span class="divider">|</span>
+        <span class="total-price" th:text="'₹' + ${cart.totalPrice}">₹499</span>
+    </div>
+
+    <a th:href="@{/cart}" class="view-cart-link">
+        View Cart <i class="fas fa-shopping-bag"></i>
+    </a>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-col">
+            <div class="footer-logo">🍕 SANGAMESH'S</div>
+            <p>The best handcrafted pizza in town, delivered hot and fresh to your doorstep.</p>
+        </div>
+
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <div class="footer-links">
+                <a th:href="@{/home}">Home</a>
+                <a th:href="@{/menu}">Full Menu</a>
+                <a th:href="@{/orders}">My Orders</a>
+                <a th:href="@{/contact}">Contact Us</a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h3>Connect With Us</h3>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p style="margin-top:10px; font-size:0.8rem; opacity:0.7;">
+                &copy; 2026 Sangamesh's Pizza Corner.<br>All Rights Reserved.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* --- FOOTER STYLES --- */
+    .main-footer {
+        background-color: #2C3E50; /* Brand Dark */
+        color: white;
+        padding: 60px 5% 100px; /* Extra bottom padding so floating cart doesn't cover text */
+        margin-top: auto;
+        font-family: 'Poppins', sans-serif;
+        border-top: 5px solid #C0392B; /* Brand Tomato Accent */
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+    }
+
+    .footer-logo {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.8rem;
+        color: #C0392B; /* Brand Tomato */
+        margin-bottom: 15px;
+        letter-spacing: 1px;
+    }
+
+    .footer-col h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: #ecf0f1;
+    }
+
+    .footer-links a {
+        display: block;
+        color: #bdc3c7;
+        text-decoration: none;
+        margin-bottom: 10px;
+        transition: 0.3s;
+        font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+        color: #C0392B;
+        padding-left: 5px;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 15px;
+    }
+
+    .social-icons a {
+        width: 40px; height: 40px;
+        background: rgba(255,255,255,0.1);
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        color: white;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .social-icons a:hover {
+        background: #C0392B;
+        transform: translateY(-3px);
+    }
+
+    /* --- FLOATING CART BAR (The Magic Part) --- */
+    .cart-floating-bar {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 500px;
+        background-color: #2E7D32; /* Action Green */
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(46, 125, 50, 0.4);
+        z-index: 9999;
+        animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-family: 'Oswald', sans-serif;
+    }
+
+    .cart-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .count-box {
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+
+    .divider { opacity: 0.5; }
+
+    .total-price {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .view-cart-link {
+        background: white;
+        color: #2E7D32;
+        padding: 8px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Poppins', sans-serif;
+        transition: transform 0.2s;
+    }
+
+    .view-cart-link:hover {
+        transform: scale(1.05);
+    }
+
+    @keyframes slideUp {
+        from { transform: translate(-50%, 100px); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+</style>
+
+</body>
+</html>

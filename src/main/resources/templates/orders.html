@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* 60-30-10 System */
+            --bg-neutral: #F4F1ED;
+            --brand-tomato: #C0392B;
+            --brand-dark: #2C3E50;
+            --action-green: #2E7D32;
+            --status-blue: #17a2b8;
+            --status-yellow: #ffc107;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--brand-dark);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        /* --- 1. GLASS NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 15px 5%; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif; font-size: 1.5rem;
+            color: var(--brand-tomato); text-decoration: none;
+            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
+        }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--brand-dark); text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--brand-tomato); }
+        .logout-btn {
+            border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important;
+            padding: 6px 20px; border-radius: 25px; transition: 0.3s;
+        }
+        .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
+
+        /* --- 2. HEADER --- */
+        .page-header {
+            margin-top: 100px; padding: 40px 5%; text-align: center;
+            background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%);
+        }
+        .page-header h1 {
+            font-family: 'Oswald', sans-serif; font-size: 3rem;
+            color: var(--brand-dark); text-transform: uppercase; margin-bottom: 10px;
+        }
+        .page-header p { font-size: 1.1rem; color: #666; }
+
+        /* --- 3. ORDERS GRID --- */
+        .container {
+            max-width: 1000px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box;
+        }
+
+        .orders-grid {
+            display: grid; grid-template-columns: 1fr; gap: 30px;
+        }
+
+        /* Order Card */
+        .order-card {
+            background: white; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s;
+            border: 1px solid rgba(0,0,0,0.05); position: relative;
+        }
+        .order-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+        /* Card Header */
+        .card-header {
+            background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
+        }
+
+        .order-date { font-weight: 700; color: var(--brand-dark); font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .order-id { font-family: 'Oswald', sans-serif; color: #888; font-size: 0.9rem; letter-spacing: 1px; }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 8px 15px; border-radius: 30px; font-weight: 800; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .status-placed { background: #fff3cd; color: #856404; }
+        .status-cooking { background: #e0f7fa; color: #006064; }
+        .status-out { background: #e8eaf6; color: #1a237e; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        /* Card Body */
+        .card-body { padding: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+
+        .item-list ul { padding-left: 20px; margin: 0; color: #555; font-size: 0.95rem; }
+        .item-list li { margin-bottom: 5px; }
+
+        .price-section { text-align: right; min-width: 120px; }
+        .total-label { font-size: 0.8rem; color: #888; text-transform: uppercase; font-weight: 700; }
+        .total-amount { font-size: 1.5rem; color: var(--brand-tomato); font-weight: 800; font-family: 'Oswald', sans-serif; }
+
+        /* Action Buttons */
+        .card-footer {
+            padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 15px; background: white;
+        }
+
+        .btn {
+            padding: 10px 20px; border-radius: 12px; font-weight: 700; text-decoration: none;
+            transition: 0.2s; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem;
+        }
+        .btn-track { background: var(--status-blue); color: white; }
+        .btn-track:hover { background: #138496; transform: translateY(-2px); }
+
+        .btn-cancel { background: white; border: 2px solid #dc3545; color: #dc3545; }
+        .btn-cancel:hover { background: #dc3545; color: white; }
+
+        .btn-rate { background: var(--action-green); color: white; }
+        .btn-rate:hover { background: #218838; transform: translateY(-2px); }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .empty-icon { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .card-body { flex-direction: column; align-items: flex-start; }
+            .price-section { text-align: left; margin-top: 10px; }
+            .card-footer { justify-content: space-between; }
+            .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/menu}">Menu</a>
+        <a th:href="@{/cart}">Cart</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="page-header">
+    <h1>Your Orders 📦</h1>
+    <p>Track your active deliveries and view past receipts</p>
+</div>
+
+<div class="container">
+
+    <div th:if="${orders == null || orders.empty}" class="empty-state">
+        <i class="fas fa-box-open empty-icon"></i>
+        <h3>No orders found!</h3>
+        <p style="color:#777; margin-bottom: 30px;">Looks like you haven't ordered any delicious pizza yet.</p>
+        <a th:href="@{/menu}" class="btn btn-rate" style="padding: 12px 30px;">Order Now <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <div class="orders-grid" th:if="${orders != null && !orders.empty}">
+
+        <div class="order-card" th:each="order : ${orders}">
+
+            <div class="card-header">
+                <div>
+                    <div class="order-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span th:text="${#dates.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">12 Feb 2024</span>
+                    </div>
+                    <div class="order-id" th:text="'ORDER ID: #' + ${order.id}">#123456</div>
+                </div>
+
+                <div th:switch="${order.status}">
+                    <span th:case="'PLACED'" class="status-badge status-placed"><i class="fas fa-clock"></i> Placed</span>
+                    <span th:case="'COOKING'" class="status-badge status-cooking"><i class="fas fa-fire"></i> Cooking</span>
+                    <span th:case="'OUT_FOR_DELIVERY'" class="status-badge status-out"><i class="fas fa-motorcycle"></i> Out for Delivery</span>
+                    <span th:case="'DELIVERED'" class="status-badge status-delivered"><i class="fas fa-check-circle"></i> Delivered</span>
+                    <span th:case="'CANCELLED'" class="status-badge status-cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="item-list">
+                    <ul>
+                        <li th:each="item : ${order.items}">
+                            <i class="fas fa-pizza-slice" style="color:var(--brand-tomato); margin-right:5px; font-size:0.8rem;"></i>
+                            <span th:text="${item}">Margherita (Medium)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="price-section">
+                    <div class="total-label">Total Amount</div>
+                    <div class="total-amount" th:text="'₹' + ${order.totalAmount}">₹499</div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+
+                <form th:if="${#strings.equalsIgnoreCase(order.status, 'PLACED')}"
+                      th:action="@{/order/cancel}" method="post" style="margin:0;">
+                    <input type="hidden" name="orderId" th:value="${order.id}" />
+                    <button type="submit" class="btn btn-cancel">Cancel Order</button>
+                </form>
+
+                <a th:if="${#strings.equalsIgnoreCase(order.status, 'COOKING')
+                         or #strings.equalsIgnoreCase(order.status, 'OUT_FOR_DELIVERY')}"
+                   th:href="@{/order/track(orderId=${order.id})}" class="btn btn-track">
+                    Track Order 🛵
+                </a>
+
+                <div th:if="${#strings.equalsIgnoreCase(order.status, 'DELIVERED')}">
+                    <a th:if="${order.rating == 0}" th:href="@{/order/rate(orderId=${order.id})}" class="btn btn-rate">
+                        Rate Order ⭐
+                    </a>
+                    <span th:if="${order.rating > 0}" style="color: #ffc107; font-weight:bold; font-size:1.1rem;">
+                        <span th:text="${'★'.repeat(order.rating)}"></span>
+                    </span>
+                </div>
+
+                <a th:href="@{/order/receipt(orderId=${order.id})}" style="color:#666; font-size:0.9rem; text-decoration:underline; align-self:center;">View Receipt</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+</body>
+</html>

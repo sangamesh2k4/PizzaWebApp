@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Analytics - Pizza Corner</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 20px; }
+        .chart-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 400px; }
+        .stat-card { background: #ff6f61; color: white; padding: 20px; border-radius: 10px; text-align: center; width: 200px; }
+    </style>
+</head>
+<body>
+<h2 style="text-align: center;">🍕 Sales & Operations Analytics</h2>
+
+<div class="dashboard-container">
+    <div class="stat-card">
+        <h3>Total Sales</h3>
+        <h2 th:text="'₹' + ${totalRevenue}"></h2>
+    </div>
+
+    <div class="chart-card">
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Get data from Thymeleaf
+    const placed = [[${placedCount}]];
+    const cooking = [[${cookingCount}]];
+    const delivered = [[${deliveredCount}]];
+
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Placed', 'Cooking', 'Delivered'],
+            datasets: [{
+                label: 'Order Status Distribution',
+                data: [placed, cooking, delivered],
+                backgroundColor: ['#ffcd56', '#36a2eb', '#4bc0c0']
+            }]
+        },
+        options: { responsive: true, plugins: { title: { display: true, text: 'Orders by Status' } } }
+    });
+</script>
+</body>
+</html>

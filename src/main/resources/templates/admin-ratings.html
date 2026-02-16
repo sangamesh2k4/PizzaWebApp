@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ratings & Reviews - Admin Panel</title>
+    <style>
+        /* Base Admin CSS */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
+        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover, .active { color: white; border-bottom: 2px solid #ffc107; padding-bottom: 2px; }
+        .logout { background: #dc3545; padding: 6px 15px; border-radius: 4px; color: white !important; border: none; font-weight: bold; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { border-left: 5px solid #ffc107; padding-left: 15px; color: #333; margin-bottom: 20px; }
+
+        /* Stats Summary */
+        .rating-summary { background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; justify-content: space-around; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .stat-box { text-align: center; }
+        .stat-num { font-size: 2rem; font-weight: bold; color: #333; }
+        .stat-label { color: #666; font-size: 0.9rem; text-transform: uppercase; }
+
+        /* Reviews List */
+        .review-card { background: white; border-bottom: 1px solid #eee; padding: 20px; display: flex; gap: 20px; }
+        .review-card:first-child { border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .review-card:last-child { border-bottom: none; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+
+        .star-box { width: 60px; text-align: center; background: #fffcf5; border-radius: 8px; padding: 5px; border: 1px solid #ffeeba; height: fit-content; }
+        .star-val { font-size: 1.5rem; font-weight: bold; color: #ffc107; display: block; }
+        .star-icon { color: #ffc107; }
+
+        .review-content { flex: 1; }
+        .review-meta { margin-bottom: 5px; font-size: 0.9rem; color: #777; }
+        .order-link { color: #007bff; text-decoration: none; font-weight: bold; }
+        .review-text { color: #444; font-style: italic; background: #f9f9f9; padding: 12px; border-radius: 5px; margin-top: 5px; border-left: 3px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/orders" class="active">Orders</a>
+        <a href="/admin/menu">Menu</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/ratings">Ratings</a>
+        <a href="/admin/coupons">Coupons</a>
+        <a href="/admin/messages">Messages</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>⭐ Customer Feedback</h1>
+
+    <div class="rating-summary">
+        <div class="stat-box">
+            <div class="stat-num" th:text="${averageRating}">4.5</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" th:text="${totalReviews}">120</div>
+            <div class="stat-label">Total Reviews</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" style="color: #28a745;">98%</div>
+            <div class="stat-label">Positive Feedback</div>
+        </div>
+    </div>
+
+    <div style="background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div th:each="review : ${reviews}" class="review-card">
+            <div class="star-box">
+                <span class="star-val" th:text="${review.rating}">5</span>
+                <span class="star-icon">★</span>
+            </div>
+            <div class="review-content">
+                <div class="review-meta">
+                    <strong>Order #<a th:href="@{/admin/orders(id=${review.orderId})}" class="order-link" th:text="${review.orderId}">101</a></strong>
+                    &bull; <span th:text="${#dates.format(review.date, 'dd MMM yyyy')}">12 Feb</span>
+                    &bull; <span th:text="${review.customerName}">Customer Name</span>
+                </div>
+                <div class="review-text" th:text="${review.feedback}">
+                    "Great pizza! Arrived hot and cheese was perfect."
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

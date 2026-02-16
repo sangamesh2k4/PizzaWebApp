@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sangamesh's Pizza - Premium Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* 60-30-10 Color System */
+            --bg-neutral: #F4F1ED;
+            --card-white: #FFFFFF;
+            --brand-tomato: #C0392B;
+            --brand-dark: #2C3E50;
+            --action-green: #2E7D32;
+            --gold-accent: #F1C40F;
+        }
+
+        body {
+            margin: 0; font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-neutral); color: var(--brand-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- MOBILE SNAP SCROLL (The App Feel) --- */
+@media (max-width: 768px) {
+    .food-grid {
+        display: flex; /* Switch from Grid to Flex */
+        overflow-x: auto; /* Enable horizontal scroll */
+        scroll-snap-type: x mandatory; /* Snap to element */
+        gap: 20px;
+        padding-bottom: 20px; /* Space for scrollbar */
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+    }
+
+    .food-card {
+        min-width: 260px; /* Fixed width for swipe items */
+        scroll-snap-align: center; /* Center the item when swiping stops */
+    }
+
+    /* Hide scrollbar for cleaner look */
+    .food-grid::-webkit-scrollbar { display: none; }
+}
+
+        /* --- 1. GLASS NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.8rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-items a { text-decoration: none; color: var(--brand-dark); font-weight: 600; margin-left: 30px; transition: 0.3s; }
+        .nav-items a:hover { color: var(--brand-tomato); }
+        .cart-icon { position: relative; }
+        .cart-badge { position: absolute; top: -8px; right: -10px; background: var(--brand-tomato); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; }
+
+        /* --- 2. HERO SECTION (Immersive) --- */
+        .hero {
+            padding: 140px 5% 80px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: radial-gradient(circle at top right, #fadbd8 0%, transparent 40%);
+        }
+        .hero-text h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; color: var(--brand-dark); }
+        .hero-text span { color: var(--brand-tomato); }
+        .hero-desc { font-size: 1.1rem; color: #666; margin-bottom: 30px; max-width: 500px; }
+
+        .cta-btn {
+            background: var(--brand-tomato); color: white; padding: 15px 40px;
+            border-radius: 50px; text-decoration: none; font-weight: 700;
+            box-shadow: 0 10px 25px rgba(192, 57, 43, 0.3); transition: transform 0.3s;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .cta-btn:hover { transform: translateY(-5px); background: #a93226; }
+
+        .hero-img { width: 45%; animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* --- 3. INFINITE MARQUEE STRIP --- */
+        .marquee { background: var(--brand-tomato); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; transform: rotate(-1deg) scale(1.05); margin: 40px 0; border: 2px dashed rgba(255,255,255,0.3); }
+        .marquee-content { display: inline-block; animation: scroll 20s linear infinite; font-family: 'Oswald', sans-serif; font-size: 1.2rem; }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* --- 4. CATEGORIES (The "More Things") --- */
+        .section-title { text-align: center; font-size: 2.5rem; font-family: 'Oswald', sans-serif; margin-bottom: 40px; position: relative; display: inline-block; left: 50%; transform: translateX(-50%); }
+        .section-title::after { content: ''; display: block; width: 60px; height: 4px; background: var(--brand-tomato); margin: 10px auto 0; border-radius: 2px; }
+
+        .categories { display: flex; justify-content: center; gap: 40px; padding: 0 5% 80px; flex-wrap: wrap; }
+        .cat-card {
+            background: white; padding: 20px; border-radius: 20px; text-align: center;
+            width: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s;
+            border: 1px solid rgba(0,0,0,0.05); cursor: pointer;
+        }
+        .cat-card:hover { transform: translateY(-10px); border-color: var(--brand-tomato); }
+        .cat-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px; }
+        .cat-name { font-weight: 700; color: var(--brand-dark); }
+
+        /* --- 5. BESTSELLER GRID --- */
+        .bestsellers { background: white; padding: 80px 5%; }
+        .food-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .food-card {
+            background: var(--bg-neutral); border-radius: 20px; overflow: hidden; position: relative;
+            transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
+        }
+        .food-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .badge { position: absolute; top: 15px; left: 15px; background: var(--gold-accent); color: black; padding: 5px 10px; font-weight: 800; font-size: 0.7rem; border-radius: 5px; }
+        .food-img { width: 100%; height: 200px; object-fit: cover; }
+        .food-info { padding: 20px; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .price { font-size: 1.2rem; font-weight: 800; color: var(--brand-tomato); }
+        .add-btn { background: var(--action-green); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+        /* --- 6. HOW IT WORKS --- */
+        .steps { padding: 80px 5%; text-align: center; }
+        .step-grid { display: flex; justify-content: center; gap: 50px; margin-top: 40px; flex-wrap: wrap; }
+        .step { max-width: 250px; }
+        .step-icon { width: 80px; height: 80px; background: #ffe0b2; color: #e65100; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }
+
+        /* --- 7. RICH FOOTER --- */
+        footer { background: var(--brand-dark); color: white; padding: 60px 5% 20px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .f-col h4 { color: var(--brand-tomato); margin-bottom: 20px; font-size: 1.2rem; }
+        .f-col a { display: block; color: #bbb; text-decoration: none; margin-bottom: 10px; transition: 0.3s; }
+        .f-col a:hover { color: white; padding-left: 5px; }
+        .socials a { color: white; margin-right: 15px; font-size: 1.2rem; }
+        .copyright { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; color: #777; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; }
+            .hero-img { width: 80%; margin-top: 40px; }
+            .marquee { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#" class="logo"><i class="fas fa-pizza-slice"></i> Sangu's</a>
+    <div class="nav-items">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/menu}">Menu</a>
+        <a th:href="@{/orders}">Orders</a>
+        <a th:href="@{/cart}" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge">2</span>
+        </a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-text">
+        <span style="color: var(--action-green); font-weight: 800; letter-spacing: 1px;">🚀 FASTEST DELIVERY IN TOWN</span>
+        <h1>Slice of <br><span>Heaven</span></h1>
+        <p class="hero-desc">Experience the authentic taste of handcrafted pizzas made with 100% organic ingredients and love.</p>
+        <a th:href="@{/menu}" class="cta-btn">Order Now <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <img src="https://pngimg.com/uploads/pizza/pizza_PNG44090.png" class="hero-img" alt="Delicious Pizza">
+</section>
+
+<div class="marquee">
+    <div class="marquee-content">
+        🔥 50% OFF ON FIRST ORDER  •  FRESH INGREDIENTS  •  FREE DELIVERY OVER ₹500  •  HOT & SPICY  •  🔥 50% OFF ON FIRST ORDER  •  FRESH INGREDIENTS  •  FREE DELIVERY OVER ₹500
+    </div>
+</div>
+
+<h2 class="section-title">What's on your mind?</h2>
+<div class="categories">
+    <div class="cat-card" onclick="window.location.href='/menu?category=Pizza'">
+        <img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" class="cat-img" alt="Pizza">
+        <div class="cat-name">Pizza</div>
+    </div>
+    <div class="cat-card" onclick="window.location.href='/menu?category=Burger'">
+        <img src="https://cdn-icons-png.flaticon.com/512/1984/1984166.png" class="cat-img" alt="Burger">
+        <div class="cat-name">Sides</div>
+    </div>
+    <div class="cat-card" onclick="window.location.href='/menu?category=Drinks'">
+        <img src="https://cdn-icons-png.flaticon.com/512/2405/2405479.png" class="cat-img" alt="Drinks">
+        <div class="cat-name">Drinks</div>
+    </div>
+    <div class="cat-card" onclick="window.location.href='/menu?category=Dessert'">
+        <img src="https://cdn-icons-png.flaticon.com/512/3081/3081840.png" class="cat-img" alt="Dessert">
+        <div class="cat-name">Dessert</div>
+    </div>
+</div>
+
+<div class="bestsellers">
+    <h2 class="section-title">Top Rated Slices</h2>
+    <div class="food-grid">
+        <div class="food-card">
+            <span class="badge">⭐ BESTSELLER</span>
+            <img src="https://assets.nicepagecdn.com/d2cc3eaa/3956694/images/pizza2.jpg" class="food-img" alt="Pizza">
+            <div class="food-info">
+                <h3>Farmhouse Special</h3>
+                <p style="color:#777; font-size:0.9rem;">Onion, Capsicum, Tomato, Mushroom</p>
+                <div class="price-row">
+                    <span class="price">₹299</span>
+                    <button class="add-btn">Add +</button>
+                </div>
+            </div>
+        </div>
+        <div class="food-card">
+            <span class="badge" style="background:#ff6f61; color:white;">🌶️ SPICY</span>
+            <img src="https://assets.nicepagecdn.com/d2cc3eaa/3956694/images/pizza6.jpg" class="food-img" alt="Pizza">
+            <div class="food-info">
+                <h3>Mexican Green Wave</h3>
+                <p style="color:#777; font-size:0.9rem;">Jalapeno, Onion, Tomato, Mexican Herbs</p>
+                <div class="price-row">
+                    <span class="price">₹349</span>
+                    <button class="add-btn">Add +</button>
+                </div>
+            </div>
+        </div>
+        <div class="food-card">
+            <img src="https://assets.nicepagecdn.com/d2cc3eaa/3956694/images/pizza4.jpg" class="food-img" alt="Pizza">
+            <div class="food-info">
+                <h3>Peppy Paneer</h3>
+                <p style="color:#777; font-size:0.9rem;">Paneer, Crisp Capsicum, Red Pepper</p>
+                <div class="price-row">
+                    <span class="price">₹319</span>
+                    <button class="add-btn">Add +</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+        <a th:href="@{/menu}" style="color:var(--brand-tomato); font-weight:700; text-decoration:none;">View Full Menu &raquo;</a>
+    </div>
+</div>
+
+<div class="steps">
+    <h2 class="section-title">How It Works</h2>
+    <div class="step-grid">
+        <div class="step">
+            <div class="step-icon"><i class="fas fa-mobile-alt"></i></div>
+            <h3>1. Select Meals</h3>
+            <p style="color:#666;">Browse our delicious menu and add items to your cart.</p>
+        </div>
+        <div class="step">
+            <div class="step-icon"><i class="fas fa-fire"></i></div>
+            <h3>2. We Cook</h3>
+            <p style="color:#666;">Our expert chefs prepare your food with love and care.</p>
+        </div>
+        <div class="step">
+            <div class="step-icon"><i class="fas fa-motorcycle"></i></div>
+            <h3>3. Fast Delivery</h3>
+            <p style="color:#666;">Hot and fresh food delivered to your doorstep in minutes.</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-grid">
+        <div class="f-col">
+            <h4>Sangamesh's Pizza</h4>
+            <p style="color:#bbb; line-height:1.6;">The best pizza in town, made with fresh organic ingredients and delivered hot.</p>
+            <div class="socials" style="margin-top:20px;">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+        <div class="f-col">
+            <h4>Quick Links</h4>
+            <a href="#">Home</a>
+            <a href="#">Our Menu</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="f-col">
+            <h4>Contact Us</h4>
+            <p style="color:#bbb;">📞 +91 98765 43210</p>
+            <p style="color:#bbb;">📧 hello@sangupizza.com</p>
+            <p style="color:#bbb;">📍 Hyderabad, Telangana</p>
+        </div>
+    </div>
+    <div class="copyright">
+        &copy; 2026 Sangamesh's Pizza Corner. All Rights Reserved.
+    </div>
+</footer>
+
+</body>
+</html>

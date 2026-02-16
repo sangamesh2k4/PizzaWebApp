@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Control Center - Edit Item</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Navbar is kept to maintain context, even on edit page */
+        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .edit-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; }
+        .edit-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; border-top: 5px solid #ffc107; }
+
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
+
+        .btn-group { margin-top: 25px; display: flex; gap: 15px; }
+        .btn-save { flex: 1; background: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { flex: 1; background: #6c757d; color: white; text-decoration: none; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; }
+        .btn-save:hover { background: #218838; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin/dashboard" class="brand">🕹️ PIZZA CORNER CONTROL CENTER</a>
+    <div class="nav-links">
+        <a href="/admin/menu">Back to Menu</a>
+    </div>
+</nav>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <h2>✏️ Edit Item Details</h2>
+        <form th:action="@{/admin/menu/add}" method="post" class="add-form">
+
+            <h3>Add New Item</h3>
+
+            <input type="text" name="name" placeholder="Item Name (e.g. Pepperoni)" required>
+            <input type="text" name="description" placeholder="Description">
+            <input type="text" name="imageUrl" placeholder="Image URL">
+
+            <select name="category">
+                <option value="Pizza">Pizza</option>
+                <option value="Sides">Sides</option>
+                <option value="Drinks">Drinks</option>
+            </select>
+
+            <label>Pricing Options:</label>
+            <div class="pricing-row">
+                <input type="text" name="sizeNames" placeholder="Size (e.g. Small)" required>
+                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)" required>
+            </div>
+
+            <div class="pricing-row">
+                <input type="text" name="sizeNames" placeholder="Size (e.g. Medium)">
+                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)">
+            </div>
+
+            <div class="pricing-row">
+                <input type="text" name="sizeNames" placeholder="Size (e.g. Large)">
+                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)">
+            </div>
+
+            <button type="submit">Add Item</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

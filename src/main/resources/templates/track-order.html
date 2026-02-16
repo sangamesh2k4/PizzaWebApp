@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Track Order - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --brand-tomato: #C0392B; --brand-dark: #2C3E50; --action-green: #2E7D32; --bg-neutral: #F4F1ED; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-neutral); margin: 0; padding-top: 80px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Navbar (Standard) */
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); padding: 15px 5%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; }
+        .nav-links a { color: var(--brand-dark); text-decoration: none; margin-left: 30px; font-weight: 600; }
+
+        .container { background: white; max-width: 700px; margin: 40px auto; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center; }
+        h2 { font-family: 'Oswald', sans-serif; color: var(--brand-dark); font-size: 2rem; margin-bottom: 5px; }
+        .order-id { color: #888; font-size: 0.9rem; margin-bottom: 40px; letter-spacing: 1px; }
+
+        /* Progress Bar */
+        .progress-track { display: flex; justify-content: space-between; position: relative; margin-bottom: 50px; }
+        .progress-line-bg { position: absolute; top: 25px; left: 10%; width: 80%; height: 4px; background: #eee; z-index: 0; }
+        .progress-line-fill { position: absolute; top: 25px; left: 10%; height: 4px; background: var(--action-green); z-index: 0; transition: width 1s ease; }
+
+        .step { position: relative; z-index: 1; width: 25%; }
+        .icon-box { width: 50px; height: 50px; background: white; border: 2px solid #eee; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #ccc; transition: 0.3s; }
+        .step-label { font-size: 0.85rem; color: #999; font-weight: 600; }
+
+        /* Active State */
+        .step.active .icon-box { background: var(--action-green); border-color: var(--action-green); color: white; transform: scale(1.1); box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3); }
+        .step.active .step-label { color: var(--brand-dark); }
+
+        .status-msg { background: #e8f5e9; color: var(--action-green); padding: 15px; border-radius: 10px; font-weight: 600; display: inline-block; margin-bottom: 30px; }
+        .back-btn { display: inline-block; text-decoration: none; color: var(--brand-tomato); font-weight: 700; border: 2px solid var(--brand-tomato); padding: 10px 25px; border-radius: 30px; transition: 0.3s; }
+        .back-btn:hover { background: var(--brand-tomato); color: white; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo">🍕 SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/orders}">My Orders</a>
+        <a th:href="@{/menu}">Menu</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Track Order</h2>
+    <div class="order-id">ORDER ID: <span th:text="'#' + ${order.id}">#123</span></div>
+
+    <div class="progress-track">
+        <div class="progress-line-bg"></div>
+        <div class="progress-line-fill"
+             th:style="'width:' + (${order.status == 'PLACED' ? '0%' : (order.status == 'COOKING' ? '33%' : (order.status == 'OUT_FOR_DELIVERY' ? '66%' : '100%'))})">
+        </div>
+
+        <div class="step active">
+            <div class="icon-box"><i class="fas fa-receipt"></i></div>
+            <div class="step-label">Placed</div>
+        </div>
+
+        <div class="step" th:classappend="${order.status == 'COOKING' or order.status == 'OUT_FOR_DELIVERY' or order.status == 'DELIVERED'} ? 'active' : ''">
+            <div class="icon-box"><i class="fas fa-fire"></i></div>
+            <div class="step-label">Cooking</div>
+        </div>
+
+        <div class="step" th:classappend="${order.status == 'OUT_FOR_DELIVERY' or order.status == 'DELIVERED'} ? 'active' : ''">
+            <div class="icon-box"><i class="fas fa-motorcycle"></i></div>
+            <div class="step-label">On Way</div>
+        </div>
+
+        <div class="step" th:classappend="${order.status == 'DELIVERED'} ? 'active' : ''">
+            <div class="icon-box"><i class="fas fa-home"></i></div>
+            <div class="step-label">Delivered</div>
+        </div>
+    </div>
+
+    <div th:if="${order.status == 'COOKING'}" class="status-msg">
+        👨‍🍳 Our chef is preparing your meal with love!
+    </div>
+    <div th:if="${order.status == 'OUT_FOR_DELIVERY'}" class="status-msg">
+        🛵 The rider is zooming towards your location!
+    </div>
+    <div th:if="${order.status == 'DELIVERED'}" class="status-msg">
+        ✅ Order delivered. Enjoy your meal!
+    </div>
+
+    <a th:href="@{/orders}" class="back-btn">Back to Orders</a>
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+</body>
+</html>

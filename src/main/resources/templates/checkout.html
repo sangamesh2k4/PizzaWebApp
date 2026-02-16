@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Checkout - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-neutral: #F4F1ED;
+            --brand-tomato: #C0392B;
+            --brand-dark: #2C3E50;
+            --action-green: #2E7D32;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--brand-dark);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            padding: 15px 5%; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a { color: var(--brand-dark); text-decoration: none; margin-left: 30px; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--brand-tomato); }
+        .logout-btn { border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important; padding: 6px 20px; border-radius: 25px; transition: 0.3s; }
+        .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
+
+        /* --- CHECKOUT LAYOUT --- */
+        .checkout-wrapper {
+            max-width: 1100px; margin: 100px auto 60px; padding: 0 20px;
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;
+            width: 100%; box-sizing: border-box;
+        }
+
+        h2 { font-family: 'Oswald', sans-serif; color: var(--brand-dark); margin-bottom: 25px; font-size: 1.8rem; }
+
+        /* --- LEFT: PAYMENT FORM --- */
+        .form-card {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* User Badge */
+        .user-badge {
+            background: #f0f4f8; padding: 10px 15px; border-radius: 10px;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 30px;
+            border-left: 4px solid var(--brand-dark);
+        }
+        .user-badge i { color: var(--brand-dark); font-size: 1.2rem; }
+        .user-badge span { font-size: 0.9rem; color: #555; font-weight: 600; }
+        .user-email { color: var(--brand-tomato); font-weight: 700; }
+
+        /* Inputs */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--brand-dark); }
+        input {
+            width: 100%; padding: 12px 15px; border: 2px solid #eee; border-radius: 10px;
+            font-family: 'Poppins', sans-serif; font-size: 1rem; transition: 0.3s; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--brand-tomato); outline: none; background: #fffafa; }
+
+        /* Payment Tabs (Cards) */
+        .payment-tabs { display: flex; gap: 15px; margin-bottom: 25px; }
+        .payment-option { flex: 1; }
+
+        /* Hide Radio Input */
+        .payment-option input { display: none; }
+
+        .option-label {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            padding: 20px; border: 2px solid #eee; border-radius: 15px; cursor: pointer;
+            transition: 0.3s; color: #777; font-weight: 600;
+        }
+        .option-label i { font-size: 1.5rem; }
+
+        /* Active State */
+        .payment-option input:checked + .option-label {
+            border-color: var(--brand-tomato); color: var(--brand-tomato); background: #fff5f5;
+            box-shadow: 0 5px 15px rgba(192, 57, 43, 0.1);
+        }
+
+        /* Card Section Specifics */
+        .card-row { display: flex; gap: 15px; }
+
+        /* Pay Button */
+        .pay-btn {
+            width: 100%; background: var(--brand-tomato); color: white; padding: 16px;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; margin-top: 10px; box-shadow: 0 10px 20px rgba(192, 57, 43, 0.2);
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .pay-btn:hover { background: #a93226; transform: translateY(-3px); }
+
+        /* --- RIGHT: SUMMARY (Sticky) --- */
+        .summary-column { position: relative; }
+        .summary-card {
+            background: white; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05); position: sticky; top: 100px;
+        }
+
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: #555; }
+        .summary-total {
+            border-top: 2px dashed #eee; padding-top: 20px; margin-top: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .total-label { font-family: 'Oswald', sans-serif; font-size: 1.2rem; }
+        .total-amount { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); }
+
+        .secure-note {
+            text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+
+        .cancel-link {
+            display: block; text-align: center; margin-top: 15px; color: #777; text-decoration: none; font-size: 0.9rem;
+        }
+        .cancel-link:hover { color: var(--brand-tomato); text-decoration: underline; }
+
+        .hidden { display: none; }
+
+        @media (max-width: 900px) {
+            .checkout-wrapper { grid-template-columns: 1fr; display: flex; flex-direction: column-reverse; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo">🍕 SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/cart}">Back to Cart</a>
+    </div>
+</nav>
+
+<div class="checkout-wrapper">
+
+    <div class="form-column">
+        <div class="form-card">
+            <h2>Payment Details 💳</h2>
+
+            <div class="user-badge">
+                <i class="fas fa-user-circle"></i>
+                <div>
+                    Logged in as <span class="user-email" th:text="${email}">user@example.com</span>
+                </div>
+            </div>
+
+            <form th:action="@{/cart/pay}" method="post">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" placeholder="Sangamesh K" required>
+                </div>
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <input type="text" name="address" placeholder="123 Pizza Street, Hyderabad..." required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="98765 43210" required>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+
+                <label style="margin-bottom: 15px;">Select Payment Method</label>
+                <div class="payment-tabs">
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="CARD" checked onclick="togglePayment('card')">
+                        <div class="option-label">
+                            <i class="far fa-credit-card"></i>
+                            <span>Card</span>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="UPI" onclick="togglePayment('upi')">
+                        <div class="option-label">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>UPI / GPay</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div id="card-section">
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+                    <div class="card-row">
+                        <div class="form-group" style="flex:1;">
+                            <label>Expiry</label>
+                            <input type="text" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>CVV</label>
+                            <input type="password" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="upi-section" class="hidden">
+                    <div class="form-group">
+                        <label>UPI ID</label>
+                        <input type="text" name="upiId" placeholder="username@oksbi">
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--action-green); background: #e8f5e9; padding: 10px; border-radius: 8px;">
+                        <i class="fas fa-check-circle"></i> Open your UPI app to approve the request after clicking Pay.
+                    </p>
+                </div>
+
+                <button type="submit" class="pay-btn">
+                    Pay <span th:text="'₹' + ${grandTotal}"></span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <a th:href="@{/cart}" class="cancel-link">Cancel and return to Cart</a>
+        </div>
+    </div>
+
+    <div class="summary-column">
+        <div class="summary-card">
+            <h2>Order Summary 🧾</h2>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span th:text="'₹' + ${subtotal}">₹499.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Service Charge (5%)</span>
+                <span th:text="'₹' + ${serviceCharge}">₹25.00</span>
+            </div>
+            <div class="summary-total">
+                <span class="total-label">GRAND TOTAL</span>
+                <span class="total-amount" th:text="'₹' + ${grandTotal}">₹524.00</span>
+            </div>
+
+            <div class="secure-note">
+                <i class="fas fa-lock"></i> 256-bit SSL Secure Payment
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+<script>
+    function togglePayment(method) {
+        const cardSection = document.getElementById('card-section');
+        const upiSection = document.getElementById('upi-section');
+
+        if (method === 'upi') {
+            cardSection.classList.add('hidden');
+            upiSection.classList.remove('hidden');
+        } else {
+            upiSection.classList.add('hidden');
+            cardSection.classList.remove('hidden');
+        }
+    }
+</script>
+
+</body>
+</html>

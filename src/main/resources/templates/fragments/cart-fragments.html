@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="qty-counter" class="qty-control-wrapper" th:id="'qty-container-' + ${pizzaId}">
+
+    <form th:if="${qty == 0}" th:action="@{/cart/add/{id}(id=${pizzaId})}" method="post">
+        <button type="submit" class="add-btn">Add to Cart 🛒</button>
+    </form>
+
+    <th:block th:if="${qty > 0}">
+        <a href="javascript:void(0)"
+           th:hx-get="@{/cart/decrease/{id}(id=${pizzaId})}"
+           th:hx-target="'#qty-container-' + ${pizzaId}"
+           hx-swap="outerHTML"
+           class="qty-circle minus-btn">−</a>
+
+        <span class="qty-number" th:text="${qty}">1</span>
+
+        <a href="javascript:void(0)"
+           th:hx-get="@{/cart/increase/{id}(id=${pizzaId})}"
+           th:hx-target="'#qty-container-' + ${pizzaId}"
+           hx-swap="outerHTML"
+           class="qty-circle plus-btn">+</a>
+    </th:block>
+</div>
+</body>
+</html>

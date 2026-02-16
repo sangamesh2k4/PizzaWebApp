@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sangamesh's Pizza</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- ADMIN THEME (Dark & Gold) --- */
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
+
+        /* Navbar */
+        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .brand { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: #ffc107; text-decoration: none; letter-spacing: 1px; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; font-size: 0.95rem; }
+        .nav-links a:hover, .active { color: white; border-bottom: 2px solid #ffc107; padding-bottom: 2px; }
+        .logout { background: #dc3545; padding: 6px 15px; border-radius: 4px; color: white !important; border: none; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+        /* Container */
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        /* Welcome Banner */
+        .welcome-header {
+            background: linear-gradient(135deg, #343a40, #212529); color: white;
+            padding: 35px; border-radius: 15px; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 6px solid #ffc107;
+        }
+        .welcome-header h1 { margin: 0; font-family: 'Oswald', sans-serif; font-size: 2rem; }
+        .welcome-header p { opacity: 0.8; margin-top: 5px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 30px; }
+
+        .stat-card {
+            background: white; padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #ddd;
+            transition: transform 0.2s; display: flex; justify-content: space-between; align-items: center;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-info h3 { margin: 0; color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .stat-info p { margin: 5px 0 0; font-size: 1.8rem; font-weight: 700; color: #333; font-family: 'Oswald', sans-serif; }
+
+        .stat-icon { font-size: 2.5rem; opacity: 0.2; }
+
+        /* Colors for Cards */
+        .card-revenue { border-left-color: #28a745; } .card-revenue .stat-icon { color: #28a745; }
+        .card-orders { border-left-color: #007bff; } .card-orders .stat-icon { color: #007bff; }
+        .card-items { border-left-color: #ffc107; } .card-items .stat-icon { color: #ffc107; }
+        .card-users { border-left-color: #6f42c1; } .card-users .stat-icon { color: #6f42c1; }
+
+        /* Charts Section */
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+
+        .chart-container {
+            background: white; padding: 30px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .chart-header { margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+        /* Status List (Side of Chart) */
+        .status-list { list-style: none; padding: 0; margin: 0; }
+        .status-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f4f4f4; font-size: 0.95rem; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: white; }
+
+        @media (max-width: 900px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/orders" class="active">Orders</a>
+        <a href="/admin/menu">Menu</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/ratings">Ratings</a>
+        <a href="/admin/coupons">Coupons</a>
+        <a href="/admin/messages">Messages</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="welcome-header">
+        <h1>Dashboard Overview</h1>
+        <p>Here is what's happening at Sangamesh's Pizza today.</p>
+    </div>
+
+
+
+    <div class="stats-grid">
+        <div class="stat-card card-revenue">
+            <div class="stat-info">
+                <h3>Total Revenue</h3>
+                <p th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 1, 0)}">₹50,000</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+        </div>
+
+        <div class="stat-card card-orders">
+            <div class="stat-info">
+                <h3>Total Orders</h3>
+                <p th:text="${totalOrders}">1,204</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+        </div>
+
+        <div class="stat-card card-items">
+            <div class="stat-info">
+                <h3>Menu Items</h3>
+                <p th:text="${totalItems}">45</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-pizza-slice"></i></div>
+        </div>
+
+        <div class="stat-card card-users">
+            <div class="stat-info">
+                <h3>Reg. Users</h3>
+                <p th:text="${totalUsers}">890</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+        </div>
+    </div>
+
+    <div class="charts-row">
+
+        <div class="chart-container">
+            <div class="chart-header">Live Order Distribution</div>
+            <div style="height: 300px; position: relative;">
+                <canvas id="orderChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">Breakdown</div>
+            <ul class="status-list">
+                <li class="status-item">
+                    <span><i class="fas fa-clock" style="color:#ffc107;"></i> Placed</span>
+                    <span class="status-badge" style="background:#ffc107; color:#333;" th:text="${placedCount}">0</span>
+                </li>
+                <li class="status-item">
+                    <span><i class="fas fa-fire" style="color:#fd7e14;"></i> Cooking</span>
+                    <span class="status-badge" style="background:#fd7e14;" th:text="${cookingCount}">0</span>
+                </li>
+                <li class="status-item">
+                    <span><i class="fas fa-motorcycle" style="color:#17a2b8;"></i> On the Way</span>
+                    <span class="status-badge" style="background:#17a2b8;" th:text="${onTheWayCount}">0</span>
+                </li>
+                <li class="status-item">
+                    <span><i class="fas fa-check-circle" style="color:#28a745;"></i> Delivered</span>
+                    <span class="status-badge" style="background:#28a745;" th:text="${deliveredCount}">0</span>
+                </li>
+            </ul>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <a href="/admin/orders" style="text-decoration: none; color: #007bff; font-weight: bold; font-size: 0.9rem;">
+                    Manage All Orders &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    // 1. Grab data from Thymeleaf Model
+    const placed = [[${placedCount}]];
+    const cooking = [[${cookingCount}]];
+    const delivery = [[${onTheWayCount}]];
+    const delivered = [[${deliveredCount}]];
+
+    // 2. Render Chart
+    const ctx = document.getElementById('orderChart').getContext('2d');
+    const orderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Placed', 'Cooking', 'On The Way', 'Delivered'],
+            datasets: [{
+                data: [placed, cooking, delivery, delivered],
+                backgroundColor: [
+                    '#ffc107', // Yellow (Placed)
+                    '#fd7e14', // Orange (Cooking)
+                    '#17a2b8', // Blue (Delivery)
+                    '#28a745'  // Green (Delivered)
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            },
+            cutout: '75%' // Makes it a thinner ring
+        }
+    });
+</script>
+
+</body>
+</html>

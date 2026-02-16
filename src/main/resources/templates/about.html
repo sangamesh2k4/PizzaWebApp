@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-neutral: #F4F1ED;
+            --brand-tomato: #C0392B;
+            --brand-dark: #2C3E50;
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-neutral); color: var(--brand-dark); margin: 0; padding-top: 80px; }
+
+        /* NAVBAR (Same as others) */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+            padding: 15px 5%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; }
+        .nav-links a { color: var(--brand-dark); text-decoration: none; margin-left: 30px; font-weight: 600; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 20px; }
+
+        .hero-text { text-align: center; margin-bottom: 60px; }
+        .hero-text h1 { font-family: 'Oswald', sans-serif; font-size: 3.5rem; color: var(--brand-dark); margin-bottom: 10px; }
+        .hero-text p { font-size: 1.2rem; color: #666; line-height: 1.8; max-width: 700px; margin: 0 auto; }
+
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 60px; }
+        .f-card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .f-icon { font-size: 2.5rem; color: var(--brand-tomato); margin-bottom: 20px; }
+        .f-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; }
+
+        .tech-stack { background: var(--brand-dark); color: white; padding: 40px; border-radius: 20px; text-align: center; }
+        .tech-stack h2 { font-family: 'Oswald', sans-serif; color: var(--brand-tomato); }
+        .tech-stack p { color: #aaa; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo">🍕 SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/menu}">Menu</a>
+        <a th:href="@{/contact}">Contact</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="hero-text">
+        <h1>Our Story</h1>
+        <p>Welcome to <strong>Sangamesh's Pizza</strong>. This isn't just a pizza store; it's a demonstration of modern full-stack passion. We use code to bake the best digital experiences.</p>
+    </div>
+
+    <div class="features">
+        <div class="f-card">
+            <i class="fas fa-leaf f-icon"></i>
+            <div class="f-title">Fresh Ingredients</div>
+            <p>Locally sourced organic vegetables and premium cheese.</p>
+        </div>
+        <div class="f-card">
+            <i class="fas fa-rocket f-icon"></i>
+            <div class="f-title">Fast Delivery</div>
+            <p>Optimized logistics to get your pizza hot in 30 mins.</p>
+        </div>
+        <div class="f-card">
+            <i class="fas fa-mobile-alt f-icon"></i>
+            <div class="f-title">Seamless Tech</div>
+            <p>A buttery smooth ordering experience powered by Java.</p>
+        </div>
+    </div>
+
+    <div class="tech-stack">
+        <h2>Built with ❤️ & Java</h2>
+        <p>Backend: Spring Boot • Database: MongoDB • Frontend: Thymeleaf</p>
+        <p style="margin-top:20px; font-size:0.9rem; opacity:0.6;">&copy; 2026 Sangamesh Projects</p>
+    </div>
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+</body>
+</html>

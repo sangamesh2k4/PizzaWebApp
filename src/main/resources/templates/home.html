@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* --- 60-30-10 Design System --- */
+            --bg-neutral: #F4F1ED;      /* 60% Warm Base */
+            --brand-tomato: #C0392B;    /* 30% Primary Brand */
+            --brand-dark: #2C3E50;      /* Text Contrast */
+            --action-green: #2E7D32;    /* 10% CTA/Success */
+            --gold-accent: #F1C40F;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--brand-dark);
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- 1. GLASS NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 15px 5%; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif; font-size: 1.5rem;
+            color: var(--brand-tomato); text-decoration: none;
+            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a {
+            color: var(--brand-dark); text-decoration: none; font-weight: 600;
+            transition: 0.3s; font-size: 0.95rem;
+        }
+        .nav-links a:hover { color: var(--brand-tomato); }
+
+        .logout-btn {
+            border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important;
+            padding: 6px 20px; border-radius: 25px; transition: 0.3s;
+        }
+        .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
+
+        /* --- 2. HERO SECTION --- */
+        .hero {
+            padding: 140px 5% 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: radial-gradient(circle at top right, #fadbd8 0%, transparent 40%);
+            min-height: 80vh;
+        }
+
+        .hero-text { max-width: 600px; }
+        .hero-text h1 {
+            font-family: 'Oswald', sans-serif; font-size: 4rem; line-height: 1.1;
+            margin-bottom: 20px; color: var(--brand-dark); text-transform: uppercase;
+        }
+        .hero-text span { color: var(--brand-tomato); }
+        .hero-desc { font-size: 1.1rem; color: #666; margin-bottom: 35px; line-height: 1.6; }
+
+        .cta-btn {
+            background: var(--brand-tomato); color: white; padding: 15px 40px;
+            border-radius: 50px; text-decoration: none; font-weight: 700;
+            box-shadow: 0 10px 25px rgba(192, 57, 43, 0.3); transition: transform 0.3s;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .cta-btn:hover { transform: translateY(-5px); background: #a93226; }
+
+        .hero-img { width: 45%; max-width: 550px; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15)); }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* --- 3. INFINITE MARQUEE --- */
+        .marquee {
+            background: var(--brand-tomato); color: white; padding: 12px 0;
+            overflow: hidden; white-space: nowrap; transform: rotate(-1deg) scale(1.02);
+            margin: 20px 0 60px; border: 2px dashed rgba(255,255,255,0.3);
+            box-shadow: 0 10px 30px rgba(192, 57, 43, 0.2);
+        }
+        .marquee-content { display: inline-block; animation: scroll 25s linear infinite; font-family: 'Oswald', sans-serif; font-size: 1.2rem; letter-spacing: 1px; }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* --- 4. CATEGORIES (Circular) --- */
+        .section-title {
+            text-align: center; font-size: 2.5rem; font-family: 'Oswald', sans-serif;
+            margin-bottom: 50px; position: relative; color: var(--brand-dark);
+        }
+        .section-title::after {
+            content: ''; display: block; width: 60px; height: 4px;
+            background: var(--brand-tomato); margin: 15px auto 0; border-radius: 2px;
+        }
+
+        .category-container {
+            display: flex; justify-content: center; gap: 40px; padding: 0 5% 80px; flex-wrap: wrap;
+        }
+
+        .cat-card {
+            background: white; padding: 25px; border-radius: 25px; text-align: center;
+            width: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s;
+            border: 1px solid rgba(0,0,0,0.05); text-decoration: none; display: block;
+        }
+        .cat-card:hover { transform: translateY(-10px); border-color: var(--brand-tomato); }
+
+        .cat-img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 15px; }
+        .cat-name { font-weight: 700; color: var(--brand-dark); font-size: 1.1rem; display: block; }
+
+        /* --- 5. BESTSELLER GRID (Snap Scroll) --- */
+        .bestsellers { background: white; padding: 80px 5%; border-top: 1px solid rgba(0,0,0,0.05); }
+
+        .food-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .food-card {
+            background: var(--bg-neutral); border-radius: 20px; overflow: hidden; position: relative;
+            transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column;
+        }
+        .food-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+
+        .badge {
+            position: absolute; top: 15px; left: 15px; background: var(--gold-accent);
+            color: black; padding: 6px 12px; font-weight: 800; font-size: 0.75rem;
+            border-radius: 8px; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .food-img { width: 100%; height: 220px; object-fit: cover; }
+
+        .food-info { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .food-info h3 { margin: 0 0 10px; font-family: 'Oswald', sans-serif; font-size: 1.4rem; }
+
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 15px; }
+        .price { font-size: 1.3rem; font-weight: 800; color: var(--brand-tomato); }
+
+        .add-btn {
+            background: var(--action-green); color: white; border: none; padding: 10px 20px;
+            border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s;
+        }
+        .add-btn:hover { background: #1B5E20; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; }
+            .hero-img { width: 80%; margin-top: 40px; }
+            .nav-links { display: none; } /* Consider adding a hamburger menu later */
+
+            /* Mobile Snap Scroll */
+            .food-grid {
+                display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+                gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
+            }
+            .food-card { min-width: 280px; scroll-snap-align: center; }
+            .food-grid::-webkit-scrollbar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/menu}">Menu</a>
+        <a th:href="@{/cart}">Cart</a>
+        <a th:href="@{/orders}">Orders</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-text">
+        <span style="color: var(--action-green); font-weight: 800; letter-spacing: 2px; font-size: 0.9rem;">🚀 FASTEST DELIVERY IN TOWN</span>
+        <h1>Slice of <br><span>Heaven</span></h1>
+        <p class="hero-desc">Craving something delicious? Select a category below or explore our full menu of handcrafted pizzas.</p>
+        <a th:href="@{/menu}" class="cta-btn">View Full Menu <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <img src="https://pngimg.com/uploads/pizza/pizza_PNG44090.png" class="hero-img" alt="Delicious Pizza">
+</section>
+
+<div class="marquee">
+    <div class="marquee-content">
+        🔥 50% OFF ON FIRST ORDER  •  FRESH INGREDIENTS  •  FREE DELIVERY OVER ₹500  •  HOT & SPICY  •  🔥 50% OFF ON FIRST ORDER  •  FRESH INGREDIENTS  •  FREE DELIVERY OVER ₹500
+    </div>
+</div>
+
+<h2 class="section-title">What's on your mind?</h2>
+<div class="category-container">
+
+    <a th:href="@{/menu(category='Pizza')}" class="cat-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" class="cat-img" alt="Pizzas">
+        <span class="cat-name">Pizzas</span>
+    </a>
+
+    <a th:href="@{/menu(category='Side')}" class="cat-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/1984/1984166.png" class="cat-img" alt="Sides">
+        <span class="cat-name">Sides</span>
+    </a>
+
+    <a th:href="@{/menu(category='Drink')}" class="cat-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/2405/2405479.png" class="cat-img" alt="Drinks">
+        <span class="cat-name">Drinks</span>
+    </a>
+</div>
+
+<div class="bestsellers" th:if="${bestsellers != null and !bestsellers.empty}">
+    <h2 class="section-title">Top Rated Slices</h2>
+
+    <div class="food-grid">
+        <div class="food-card" th:each="pizza : ${bestsellers}">
+            <span class="badge">⭐ BESTSELLER</span>
+
+            <img th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://via.placeholder.com/300'}" class="food-img" alt="Pizza">
+
+            <div class="food-info">
+                <h3 th:text="${pizza.name}">Pizza Name</h3>
+                <p style="color:#777; font-size:0.9rem; margin:0;" th:text="${pizza.description}">Description...</p>
+
+                <div class="price-row">
+                    <span class="price" th:text="'₹' + ${pizza.price}">₹199</span>
+
+                    <form th:action="@{'/cart/add/' + ${pizza.id}}" method="post">
+                        <input type="hidden" name="selectedSize" value="Medium">
+                        <button type="submit" class="add-btn">Add +</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:50px;">
+        <a th:href="@{/menu}" style="color:var(--brand-tomato); font-weight:800; text-decoration:none; font-size: 1.1rem; border-bottom: 2px solid var(--brand-tomato);">
+            View All Items &raquo;
+        </a>
+    </div>
+</div>
+
+<div th:replace="~{footer :: customerFooter}"></div>
+
+</body>
+</html>

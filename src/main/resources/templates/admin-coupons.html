@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Coupons - Admin Panel</title>
+    <style>
+        /* --- ADMIN SHARED CSS --- */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
+        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
+        .nav-links a.active { color: white; }
+        .logout { background: #dc3545; padding: 5px 15px; border-radius: 4px; color: white !important; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+
+        /* Header Section */
+        .header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #28a745; margin-bottom: 25px; padding-bottom: 10px; }
+        h1 { margin: 0; color: #333; font-size: 1.8rem; }
+
+        /* Button Styling */
+        .btn-create { background: #28a745; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .btn-create:hover { background: #218838; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        /* Table Styling */
+        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        thead { background: #343a40; color: white; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f8f9fa; }
+
+        /* Status Badges */
+        .badge { padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-secondary { background: #e2e3e5; color: #383d41; }
+
+        .code-text { color: #007bff; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.1rem; }
+
+        .btn-delete {
+            background-color: white; color: #dc3545; border: 1px solid #dc3545;
+            padding: 5px 12px; border-radius: 4px; text-decoration: none;
+            font-size: 0.85rem; font-weight: bold; transition: 0.3s;
+        }
+        .btn-delete:hover { background-color: #dc3545; color: white; }
+        .back-link { display: inline-block; margin-top: 20px; color: #666; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/orders" class="active">Orders</a>
+        <a href="/admin/menu">Menu</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/ratings">Ratings</a>
+        <a href="/admin/coupons">Coupons</a>
+        <a href="/admin/messages">Messages</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header-flex">
+        <h1>🎟️ Coupon Manager</h1>
+        <a th:href="@{/admin/coupons/add}" class="btn-create">+ Create New Coupon</a>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Coupon Code</th>
+                <th>Discount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="coupon : ${coupons}">
+                <td>
+                    <span class="code-text" th:text="${coupon.code}">WELCOME50</span>
+                </td>
+                <td>
+                    <strong th:text="${coupon.discountPercent} + '%'">0%</strong>
+                </td>
+                <td>
+                    <span class="badge badge-success" th:if="${coupon.active}">Active</span>
+                    <span class="badge badge-secondary" th:unless="${coupon.active}">Inactive</span>
+                </td>
+                <td>
+                    <a th:href="@{/admin/coupons/delete/{id}(id=${coupon.id})}"
+                       class="btn-delete"
+                       onclick="return confirm('Delete this coupon?');">
+                        Delete 🗑️
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${coupons.empty}">
+                <td colspan="4" style="text-align: center; color: #999; padding: 40px;">
+                    No coupons found. Start by creating one!
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin/dashboard" class="back-link">&larr; Back to Dashboard</a>
+</div>
+
+</body>
+</html>

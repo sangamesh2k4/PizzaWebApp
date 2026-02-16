@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages - Admin Panel</title>
+    <style>
+        /* Shared CSS included via reuse or copy/paste for standalone */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
+        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        .nav-links a.active { color: white; border-bottom: 2px solid #ffc107; }
+        .logout { background: #dc3545; padding: 5px 15px; border-radius: 4px; color: white; text-decoration: none; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { margin-bottom: 20px; border-left: 5px solid #ffc107; padding-left: 15px; color: #333; }
+
+        .msg-grid { display: grid; gap: 20px; }
+
+        .msg-card {
+            background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #ddd; transition: 0.2s; position: relative;
+        }
+        .msg-card.unread { border-left-color: #ffc107; background: #fffcf5; }
+        .msg-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .sender-name { font-weight: bold; color: #333; }
+        .sender-email { color: #666; font-size: 0.9rem; margin-left: 10px; }
+        .msg-date { font-size: 0.85rem; color: #999; }
+
+        .msg-subject { font-weight: bold; display: block; margin-bottom: 5px; color: #444; }
+        .msg-body { color: #555; line-height: 1.5; font-size: 0.95rem; }
+
+        .action-bar { margin-top: 15px; text-align: right; }
+        .btn-read { color: #28a745; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-right: 15px; }
+        .btn-del { color: #dc3545; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
+
+        .empty-state { text-align: center; color: #999; margin-top: 50px; }
+        .empty-icon { font-size: 3rem; display: block; margin-bottom: 10px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/orders" class="active">Orders</a>
+        <a href="/admin/menu">Menu</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/ratings">Ratings</a>
+        <a href="/admin/coupons">Coupons</a>
+        <a href="/admin/messages">Messages</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>📬 Customer Messages</h1>
+
+    <div th:if="${messages.empty}" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <h3>Inbox Zero!</h3>
+        <p>No new messages from customers.</p>
+    </div>
+
+    <div class="msg-grid">
+        <div th:each="msg : ${messages}" class="msg-card" th:classappend="${!msg.read} ? 'unread'">
+            <div class="msg-header">
+                <div>
+                    <span class="sender-name" th:text="${msg.name}">John Doe</span>
+                    <span class="sender-email" th:text="'&lt;' + ${msg.email} + '&gt;'"></span>
+                </div>
+                <span class="msg-date" th:text="${#dates.format(msg.date, 'dd MMM HH:mm')}">12:30 PM</span>
+            </div>
+
+            <span class="msg-subject" th:text="${msg.subject}">Order Inquiry</span>
+            <p class="msg-body" th:text="${msg.message}">I have a question about my order...</p>
+
+            <div class="action-bar">
+                <a th:if="${!msg.read}" th:href="@{/admin/messages/read/{id}(id=${msg.id})}" class="btn-read">✔ Mark Read</a>
+                <a th:href="@{/admin/messages/delete/{id}(id=${msg.id})}" class="btn-del" onclick="return confirm('Delete message?')">🗑 Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

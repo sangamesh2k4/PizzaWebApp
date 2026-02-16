@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oops! - Sangamesh's Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F4F1ED; font-family: 'Poppins', sans-serif;
+            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center;
+        }
+        .error-card {
+            background: white; padding: 60px 40px; border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); max-width: 450px; width: 90%;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .icon { font-size: 5rem; margin-bottom: 20px; display: inline-block; animation: drop 0.8s ease-in forwards; }
+        h1 { font-family: 'Oswald', sans-serif; color: #C0392B; margin: 0; font-size: 3.5rem; line-height: 1; }
+        h2 { font-weight: 600; color: #2C3E50; margin: 10px 0 20px; }
+        p { color: #666; margin-bottom: 30px; line-height: 1.6; }
+        .btn {
+            background: #2C3E50; color: white; padding: 15px 35px; border-radius: 50px;
+            text-decoration: none; font-weight: 700; transition: 0.3s; display: inline-block;
+        }
+        .btn:hover { background: #C0392B; transform: translateY(-3px); }
+
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="error-card">
+    <div class="icon">🔥🍕</div>
+    <h1>OOPS!</h1>
+    <h2>We burned the pizza...</h2>
+    <p>Something went wrong on our end. Our chef (the developer) has been notified and is checking the oven logs.</p>
+    <a href="/home" class="btn">Return to Safety</a>
+</div>
+</body>
+</html>

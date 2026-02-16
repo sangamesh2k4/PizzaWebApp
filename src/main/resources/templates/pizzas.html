@@ -1,0 +1,28 @@
+<div class="container" id="menuGrid">
+    <div class="card pizza-card" th:each="menuItem : ${pizzas}" th:attr="data-price=${menuItem.price}">
+
+        <div style="position: relative;">
+            <span class="price-tag" th:text="'₹' + ${menuItem.price}">₹299</span>
+            <img th:src="${menuItem.imageUrl != null ? menuItem.imageUrl : 'https://via.placeholder.com/300'}" class="card-img" alt="Pizza">
+        </div>
+
+        <div class="card-body">
+            <h3 class="card-title" th:text="${menuItem.name}">Pizza Name</h3>
+            <p class="card-desc" th:text="${menuItem.description}">Delicious topping description...</p>
+
+            <form th:action="@{'/cart/add/' + ${menuItem.id}}" method="post" class="order-form">
+                <div class="form-group">
+                    <label style="font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase;">Choose Size</label>
+                    <select name="selectedSize" class="size-select" required>
+                        <option value="" disabled selected>Select Size...</option>
+                        <option th:each="entry : ${menuItem.sizes}" th:value="${entry.key}" th:text="${entry.key} + ' - ₹' + ${entry.value}"></option>
+                    </select>
+                </div>
+
+                <input type="text" name="note" class="note-input" placeholder="Any special requests? (e.g. No onions)">
+
+                <button type="submit" class="add-btn">Add to Cart <i class="fas fa-plus"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
