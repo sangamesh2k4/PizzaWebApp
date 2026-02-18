@@ -17,6 +17,9 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
+    private CustomAuthenticationFailureHandler customFailureHandler; //
+
+    @Autowired
     private CustomSuccessHandler customSuccessHandler;
 
    
@@ -42,7 +45,8 @@ public class SecurityConfig {
     .usernameParameter("email")       // ✅ MUST match your input name
     .passwordParameter("password")
     //.defaultSuccessUrl("/home", true)
-    .failureUrl("/login?error=true")
+    //.failureUrl("/login?error=true")
+                    .failureHandler(customFailureHandler)
     .permitAll()
 )
 

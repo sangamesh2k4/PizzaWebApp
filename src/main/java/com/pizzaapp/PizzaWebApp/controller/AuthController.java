@@ -17,9 +17,14 @@ public class AuthController {
     private UserService userService;
 
 
-    // ✅ Handle Register Form Submission
+    // Handle Register Form Submission
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
+    public String registerUser(@ModelAttribute User user, Model model) {
+        if(userService.isEmailTaken(user.getEmail())){
+            model.addAttribute("error","Customer with same email ID already exists");
+            model.addAttribute("suggestion","try to sign up with different email or login with your existing ID");
+            return "register";
+        }
         userService.saveUser(user);
         return "redirect:/login"; // redirect to login3 after registration
     }

@@ -29,8 +29,9 @@ public class FavoriteController {
         model.addAttribute("isFavoritesPage", true);
         model.addAttribute("isStoreOpen", true); // Pass store status if needed
 
-        return "menu"; // Reuse menu.html to show the cards!
+        return "favorites";
     }
+
 
     // 2. Toggle Favorite (AJAX Friendly)
     @PostMapping("/toggle/{id}")

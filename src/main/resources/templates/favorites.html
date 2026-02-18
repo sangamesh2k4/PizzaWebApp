@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Favorites - Sangamesh's Pizza</title>
+
+    <th:block th:if="${_csrf}">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    </th:block>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
@@ -32,23 +38,26 @@
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--brand-tomato); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
         .nav-links { display: flex; gap: 30px; }
         .nav-links a { color: var(--brand-dark); text-decoration: none; font-weight: 600; transition: 0.3s; }
         .nav-links a:hover { color: var(--brand-tomato); }
+        .nav-links a.active { color: var(--brand-tomato); }
         .logout-btn { border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important; padding: 6px 20px; border-radius: 25px; transition: 0.3s; }
         .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
 
-        /* HEADER */
+        /* HEADER FIX: Margin-top prevents it from hiding behind Nav */
         .page-header {
-            margin-top: 100px; padding: 40px 5%; text-align: center;
+            margin-top: 100px; /* Pushes content down below fixed nav */
+            padding: 40px 5%;
+            text-align: center;
             background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%);
         }
         .page-header h1 { font-family: 'Oswald', sans-serif; font-size: 3rem; color: var(--brand-dark); text-transform: uppercase; margin-bottom: 10px; }
         .page-header p { font-size: 1.1rem; color: #666; }
 
         /* FAVORITES GRID */
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; width: 100%; box-sizing: border-box; }
 
         .fav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
 
@@ -61,25 +70,26 @@
 
         .card-img { width: 100%; height: 200px; object-fit: cover; }
 
+        /* Remove Button */
         .fav-btn {
             position: absolute; top: 15px; right: 15px;
             background: white; width: 40px; height: 40px; border-radius: 50%;
             border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem; transition: 0.2s; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--brand-tomato);
         }
-        .fav-btn:hover { transform: scale(1.1); }
+        .fav-btn:hover { transform: scale(1.1); background: #ffebee; }
 
         .card-body { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
         .card-title { margin: 0 0 5px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
         .price-badge { background: var(--brand-tomato); color: white; padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; align-self: flex-start; margin-bottom: 10px; }
 
         .add-form { background: var(--bg-neutral); padding: 15px; border-radius: 12px; margin-top: auto; }
-        .size-select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins', sans-serif; }
-        .add-btn { width: 100%; background: var(--action-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .size-select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+        .add-btn { width: 100%; background: var(--action-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;}
         .add-btn:hover { background: #1B5E20; }
 
         /* EMPTY STATE */
-        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); grid-column: 1 / -1; }
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-top: 20px; }
         .empty-icon { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
 
         @media (max-width: 768px) { .nav-links { display: none; } }
@@ -87,20 +97,11 @@
 </head>
 <body>
 
-<nav>
-    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
-    <div class="nav-links">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/menu}">Menu</a>
-        <a th:href="@{/favorites}" class="active" style="color:var(--brand-tomato);">Favorites</a>
-        <a th:href="@{/cart}">Cart</a>
-        <a th:href="@{/logout}" class="logout-btn">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{navbar :: nav(activePage='favorites')}"></div>
 
 <div class="page-header">
     <h1>Your Favorites ❤️</h1>
-    <p>The pizzas you love most, all in one place.</p>
+    <p>The items you love most, all in one place.</p>
 </div>
 
 <div class="container">
@@ -113,11 +114,12 @@
     </div>
 
     <div class="fav-grid" th:if="${pizzas != null and !pizzas.empty}">
-        <div class="card" th:each="pizza : ${pizzas}">
+        <div class="card fav-card" th:each="pizza : ${pizzas}">
             <div style="position: relative;">
-                <button class="fav-btn" th:data-id="${pizza.id}" onclick="toggleFav(this)">
-                    <i class="fas fa-heart"></i>
+                <button class="fav-btn" th:data-id="${pizza.id}" onclick="toggleFav(this)" title="Remove from Favorites">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
+
                 <img th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://via.placeholder.com/300'}" class="card-img" alt="Item">
             </div>
 
@@ -127,14 +129,24 @@
                     <span class="price-badge" th:text="'₹' + ${pizza.price}">₹199</span>
                 </div>
 
-                <p th:text="${pizza.description}" style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Description...</p>
+                <p th:text="${pizza.description}" style="color: #666; font-size: 0.9rem; margin-bottom: 20px; flex-grow: 1;">Description...</p>
 
                 <form th:action="@{'/cart/add/' + ${pizza.id}}" method="post" class="add-form">
+
                     <select name="selectedSize" class="size-select" required>
                         <option value="" disabled selected>Select Size</option>
-                        <option th:each="entry : ${pizza.sizes}" th:value="${entry.key}" th:text="${entry.key} + ' - ₹' + ${entry.value}"></option>
-                        <option th:if="${pizza.sizes == null}" value="Medium">Medium</option>
+
+                        <option th:if="${pizza.sizes != null}" th:each="entry : ${pizza.sizes}"
+                                th:value="${entry.key}"
+                                th:text="${entry.key} + ' - ₹' + ${entry.value}"></option>
+
+                        <th:block th:if="${pizza.sizes == null or pizza.sizes.isEmpty()}">
+                            <option value="Standard">Standard (Base)</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Large">Large</option>
+                        </th:block>
                     </select>
+
                     <button type="submit" class="add-btn">Add to Cart <i class="fas fa-shopping-cart"></i></button>
                 </form>
             </div>
@@ -145,21 +157,49 @@
 <div th:replace="~{footer :: customerFooter}"></div>
 
 <script>
+    // CSRF Tokens for Security
+    const csrfMeta = document.querySelector("meta[name='_csrf']");
+    const headerMeta = document.querySelector("meta[name='_csrf_header']");
+    const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+
+    if (csrfMeta && headerMeta) {
+        headers[headerMeta.getAttribute("content")] = csrfMeta.getAttribute("content");
+    }
+
     function toggleFav(btn) {
         const id = btn.getAttribute('data-id');
-        fetch('/favorites/toggle/' + id, { method: 'POST' })
+        const card = btn.closest('.card');
+
+        // Visual feedback immediately
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '0.5';
+
+        fetch('/favorites/toggle/' + id, {
+            method: 'POST',
+            headers: headers
+        })
         .then(res => res.json())
         .then(data => {
+            // Since we are on the Favorites page, toggle logic means REMOVE
             if (!data.isFavorite) {
-                const card = btn.closest('.card');
-                card.style.transition = 'all 0.3s ease';
-                card.style.opacity = '0';
                 card.style.transform = 'scale(0.9)';
+                card.style.opacity = '0';
+
                 setTimeout(() => {
                     card.remove();
-                    if (document.querySelectorAll('.card').length === 0) location.reload();
+                    // If no cards left, reload to show empty state
+                    if (document.querySelectorAll('.fav-card').length === 0) {
+                        location.reload();
+                    }
                 }, 300);
+            } else {
+                // Should not happen on fav page, but just in case
+                card.style.opacity = '1';
             }
+        })
+        .catch(err => {
+            console.error(err);
+            card.style.opacity = '1'; // Revert on error
         });
     }
 </script>

@@ -92,14 +92,7 @@
 </head>
 <body>
 
-<nav>
-    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
-    <div class="nav-links">
-        <a th:href="@{/menu}">Menu</a>
-        <a th:href="@{/orders}">My Orders</a>
-        <a th:href="@{/logout}" class="logout-btn">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{navbar :: nav(activePage='cart')}"></div>
 
 <div class="cart-wrapper">
 

@@ -11,12 +11,12 @@ import java.util.List;
 @Document(collection = "user")
 public class User {
 
-    @Id
-    private String id;
+    //private String id;
 
     private String name;
 
     @Indexed(unique = true)
+    @Id
     private String email;
 
     private String password;
@@ -32,16 +32,17 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.enabled=true;
     }
 
     // Getters and Setters
-    public String  getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+//    public String  getId() {
+//        return id;
+//    }
+//
+//    public void setId(String id) {
+//        this.id = id;
+//    }
 
     public String getName() {
         return name;

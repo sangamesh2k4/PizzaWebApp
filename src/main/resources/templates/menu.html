@@ -14,7 +14,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        /* [CSS Remains Exactly the Same - No Changes Needed Here] */
+        /* [CSS Remains Exactly the Same] */
         :root { --bg-neutral: #F4F1ED; --brand-tomato: #C0392B; --brand-dark: #2C3E50; --action-green: #2E7D32; --glass-bg: rgba(255, 255, 255, 0.95); }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-neutral); color: var(--brand-dark); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
         nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(12px); padding: 15px 5%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
@@ -65,16 +65,7 @@
 </head>
 <body>
 
-<nav>
-    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
-    <div class="nav-links">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/menu}" class="active">Menu</a>
-        <a th:href="@{/cart}">Cart</a>
-        <a th:href="@{/orders}">Orders</a>
-        <a th:href="@{/logout}" class="logout-btn">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{navbar :: nav(activePage='menu')}"></div>
 
 <div th:if="${!isStoreOpen}" style="margin-top: 80px; background: #c0392b; color: white; text-align: center; padding: 15px; font-weight: 700;">
     🌙 Our kitchen is closed. Ordering is disabled!
@@ -99,9 +90,9 @@
         </select>
     </div>
 
-    <div style="border-left: 1px solid #ddd; height: 30px;"></div>
+    <div th:if="${category != 'Drink' and category != 'Drinks'}" style="border-left: 1px solid #ddd; height: 30px;"></div>
 
-    <div style="display: flex; align-items: center; gap: 10px;">
+    <div th:if="${category != 'Drink' and category != 'Drinks'}" style="display: flex; align-items: center; gap: 10px;">
         <span class="filter-label">Filter:</span>
         <div class="segmented-control">
             <input type="radio" name="diet" id="allBtn" onchange="applyFilters()" checked>
@@ -128,8 +119,12 @@
          th:attr="data-veg=${pizza.veg ?: false}, data-price=${pizza.price}, data-name=${pizza.name}">
 
         <div style="position: relative;">
-            <span th:if="${pizza.veg == true}" class="diet-badge veg-badge">Veg</span>
-            <span th:if="${pizza.veg == false or pizza.veg == null}" class="diet-badge nonveg-badge">Non-Veg</span>
+
+    <span th:if="${pizza.veg == true and pizza.category != 'Drink' and pizza.category != 'Drinks'}"
+          class="diet-badge veg-badge">Veg</span>
+
+            <span th:if="${(pizza.veg == false or pizza.veg == null) and pizza.category != 'Drink' and pizza.category != 'Drinks'}"
+                  class="diet-badge nonveg-badge">Non-Veg</span>
 
             <button class="fav-btn" th:data-id="${pizza.id}" onclick="toggleFav(this)">
                 <span class="fav-icon" th:text="${session.favorites != null && session.favorites.contains(pizza.id) ? '❤️' : '🤍'}">🤍</span>
@@ -206,8 +201,16 @@
     }
 
     function applyFilters() {
-        const isVeg = document.getElementById('vegBtn').checked;
-        const isNonVeg = document.getElementById('nonVegBtn').checked;
+        // Safe check for elements, as they might be hidden now!
+        const vegBtn = document.getElementById('vegBtn');
+        const nonVegBtn = document.getElementById('nonVegBtn');
+
+        // If filters don't exist (e.g. on Drinks page), stop running
+        if (!vegBtn || !nonVegBtn) return;
+
+        const isVeg = vegBtn.checked;
+        const isNonVeg = nonVegBtn.checked;
+
         document.querySelectorAll('.pizza-card').forEach(card => {
             const vegStatus = card.getAttribute('data-veg') === 'true';
             if (isVeg) card.style.display = vegStatus ? 'flex' : 'none';

@@ -169,17 +169,7 @@
 </head>
 <body>
 
-<nav>
-    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
-    <div class="nav-links">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/menu}">Menu</a>
-        <a th:href="@{/cart}">Cart</a>
-        <a th:href="@{/orders}">Orders</a>
-        <a th:href="@{/logout}" class="logout-btn">Logout</a>
-    </div>
-</nav>
-
+<div th:replace="~{navbar :: nav(activePage='home')}"></div>
 <section class="hero">
     <div class="hero-text">
         <span style="color: var(--action-green); font-weight: 800; letter-spacing: 2px; font-size: 0.9rem;">🚀 FASTEST DELIVERY IN TOWN</span>

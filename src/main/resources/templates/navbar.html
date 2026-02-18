@@ -1,15 +1,77 @@
-<!-- templates/navbar.html -->
-<nav style="background-color: #ff6f61; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
-    <div style="font-size: 24px; font-weight: bold; color: white;">
-        🍕SANGAMESH'S PIZZA CORNER
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="nav(activePage)">
+    <style>
+        /* Base Nav Styles */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
+            padding: 15px 5%; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif; font-size: 1.5rem;
+            color: #C0392B; text-decoration: none; text-transform: uppercase;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Desktop Links */
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: #2C3E50; text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: #C0392B; }
+
+        /* Active Link Highlighting */
+        .nav-links a.active { color: #C0392B; border-bottom: 2px solid #C0392B; }
+
+        .logout-btn {
+            border: 2px solid #C0392B; color: #C0392B !important; padding: 6px 20px;
+            border-radius: 25px; border-bottom: 2px solid #C0392B !important;
+        }
+        .logout-btn:hover { background: #C0392B; color: white !important; }
+
+        /* Hamburger Icon (Hidden on Desktop) */
+        .menu-toggle { display: none; font-size: 1.5rem; color: #2C3E50; cursor: pointer; }
+
+        /* MOBILE RULES */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Hidden by default */
+                flex-direction: column;
+                position: absolute; top: 70px; left: 0; width: 100%;
+                background: white; padding: 20px 0;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; gap: 20px;
+            }
+            .nav-links.active { display: flex; } /* JS toggles this */
+            .menu-toggle { display: block; } /* Show icon */
+        }
+    </style>
+
+    <a th:href="@{/home}" class="logo"><i class="fas fa-pizza-slice"></i> SANGAMESH'S</a>
+
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
     </div>
-    <div>
-        <a href="/home" style="color: white; margin-right: 20px; text-decoration: none;">Home</a>
-        <a href="/menu" style="color: white; margin-right: 20px; text-decoration: none;">Menu</a>
-        <a href="/order.html" style="color: white; margin-right: 20px; text-decoration: none;">Orders</a>
-        <a href="about.html" style="color: white; margin-right: 20px; text-decoration: none;">About</a>
-        <a href="/contact" style="color: white; margin-right: 20px; text-decoration: none;">Contact</a>
-        <a href="/logout" style="color: white; margin-left: 20px; text-decoration: none;">Logout</a>
-        <a href="/cart" style="color: white; margin-left: 20px; text-decoration: none;">cart</a>
+
+    <div class="nav-links" id="navLinks">
+        <a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active'">Home</a>
+        <a th:href="@{/menu}" th:classappend="${activePage == 'menu'} ? 'active'">Menu</a>
+        <a th:href="@{/favorites}" th:classappend="${activePage == 'favorites'} ? 'active'">Favorites</a>
+        <a th:href="@{/cart}" th:classappend="${activePage == 'cart'} ? 'active'">Cart</a>
+        <a th:href="@{/orders}" th:classappend="${activePage == 'orders'} ? 'active'">Orders</a>
+        <a th:href="@{/contact}" th:classappend="${activePage == 'contact'} ? 'active'">Contact</a>
+        <a th:href="@{/about}" th:classappend="${activePage == 'about'} ? 'active'">about</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
     </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+    </script>
 </nav>
+
+</body>
+</html>

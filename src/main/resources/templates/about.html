@@ -41,14 +41,7 @@
 </head>
 <body>
 
-<nav>
-    <a th:href="@{/home}" class="logo">🍕 SANGAMESH'S</a>
-    <div class="nav-links">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/menu}">Menu</a>
-        <a th:href="@{/contact}">Contact</a>
-    </div>
-</nav>
+<div th:replace="~{navbar :: nav(activePage='about')}"></div>
 
 <div class="container">
     <div class="hero-text">
