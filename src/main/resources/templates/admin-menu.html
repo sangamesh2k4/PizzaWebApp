@@ -37,6 +37,9 @@
         th { background: #343a40; color: white; padding: 15px; text-align: left; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; color: #555; }
 
+        /* Desktop: Right align price column */
+        th:nth-child(4), td:nth-child(4) { text-align: right; }
+
         /* Actions */
         .btn-action { text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; margin-right: 5px; display: inline-block; }
         .btn-edit { background: #17a2b8; color: white; }
@@ -57,17 +60,26 @@
 
             tr { margin-bottom: 20px; border: 1px solid #ddd; border-radius: 12px; background: white; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-            td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 40%; text-align: right; display: flex; justify-content: space-between; align-items: center; }
+            td {
+                border: none; border-bottom: 1px solid #eee; position: relative;
+                padding-left: 0; /* Removed large padding */
+                display: flex; justify-content: space-between; align-items: center;
+                text-align: right;
+                gap: 15px; /* Adds space between Label and Content */
+            }
             td:last-child { border-bottom: none; justify-content: flex-end; padding-top: 15px; }
 
-            td:before { content: attr(data-label); font-weight: 700; color: #333; text-transform: uppercase; font-size: 0.8rem; }
+            td:before {
+                content: attr(data-label); font-weight: 700; color: #333;
+                text-transform: uppercase; font-size: 0.8rem;
+                white-space: nowrap; /* Prevents label from wrapping weirdly */
+            }
 
-            .btn-action { width: 100%; text-align: center; margin-bottom: 5px; }
+            .btn-action { width: 48%; text-align: center; margin-bottom: 0; }
         }
     </style>
 </head>
 <body>
-
 <div th:replace="~{admin-navbar :: nav(activePage='menu')}"></div>
 
 <div class="container">
@@ -122,8 +134,7 @@
             <th>Preview</th>
             <th>Name & Type</th>
             <th>Category</th>
-            <th>Base Price</th>
-            <th>Status</th>
+            <th style="text-align:right;">Base Price</th> <th>Status</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -131,9 +142,10 @@
         <tr th:each="item : ${pizzas}" th:classappend="${!item.available} ? 'row-disabled'">
             <td data-label="Preview"><img th:src="${item.imageUrl}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;"></td>
             <td data-label="Name">
-                <span th:text="${item.name}" style="font-weight:bold; display: block; color:#333;">Name</span>
-                <span th:if="${item.veg}" class="badge-veg">VEG</span>
-                <span th:unless="${item.veg}" class="badge-nonveg">NON-VEG</span>
+                <div style="text-align: right; width: 100%;"> <span th:text="${item.name}" style="font-weight:bold; display: block; color:#333;">Name</span>
+                    <span th:if="${item.veg}" class="badge-veg">VEG</span>
+                    <span th:unless="${item.veg}" class="badge-nonveg">NON-VEG</span>
+                </div>
             </td>
             <td data-label="Category" th:text="${item.category}">Cat</td>
             <td data-label="Price" th:text="'₹ ' + ${item.price}" style="font-weight:700; color:#28a745;">Price</td>
@@ -141,17 +153,14 @@
                 <span th:if="${item.available}" style="color:#28a745; font-weight:bold;"><i class="fas fa-check-circle"></i> Active</span>
                 <span th:unless="${item.available}" style="color:#dc3545; font-weight:bold;"><i class="fas fa-ban"></i> Disabled</span>
             </td>
-            <td data-label="Actions">
+            <td data-label="Actions" style="justify-content: flex-end; gap: 5px;">
                 <a th:href="@{/admin/menu/edit/{id}(id=${item.id})}" class="btn-action btn-edit">Edit</a>
-
                 <a th:if="${item.available}" th:href="@{/admin/menu/disable/{id}(id=${item.id})}" class="btn-action btn-toggle" style="background:#dc3545; color:white;">Disable</a>
-
                 <a th:unless="${item.available}" th:href="@{/admin/menu/enable/{id}(id=${item.id})}" class="btn-action btn-toggle" style="background:#28a745; color:white;">Enable</a>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-
 </body>
 </html>

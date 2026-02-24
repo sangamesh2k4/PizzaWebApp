@@ -10,7 +10,6 @@
     <style>
         /* Shared CSS */
         body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
-
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         h1 { border-left: 5px solid #28a745; padding-left: 15px; color: #333; margin-bottom: 25px; font-family: 'Oswald', sans-serif; }
 
@@ -18,8 +17,11 @@
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th { background: #343a40; color: white; padding: 15px; text-align: left; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
-        td { padding: 15px; border-bottom: 1px solid #eee; color: #555; vertical-align: middle; }
+        td { padding: 15px; border-bottom: 1px solid #eee; color: #555; vertical-align: top; }
         tr:hover { background-color: #f8f9fa; }
+
+        /* Desktop: Right align price column */
+        th:nth-child(4), td:nth-child(4) { text-align: right; }
 
         /* Badges & Inputs */
         .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; display: inline-block; }
@@ -29,30 +31,26 @@
 
         /* --- MOBILE RESPONSIVE TABLE (Card View) --- */
         @media (max-width: 900px) {
-            /* Force table elements to behave like blocks */
             table, thead, tbody, th, td, tr { display: block; }
-
-            /* Hide table headers */
             thead tr { position: absolute; top: -9999px; left: -9999px; }
 
-            tr {
-                margin-bottom: 20px; border: 1px solid #ddd; border-radius: 12px;
-                background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px;
-            }
+            tr { margin-bottom: 20px; border: 1px solid #ddd; border-radius: 12px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px; }
 
             td {
                 border: none; border-bottom: 1px solid #eee; position: relative;
-                padding-left: 40%; text-align: right;
-                display: flex; justify-content: space-between; align-items: center;
+                padding-left: 0; display: flex; justify-content: space-between; align-items: flex-start;
+                gap: 20px; text-align: right;
             }
-
             td:last-child { border-bottom: none; justify-content: flex-end; padding-top: 15px; }
 
-            /* Add labels before data */
-            td:before {
-                content: attr(data-label);
-                font-weight: 700; color: #333; text-transform: uppercase; font-size: 0.8rem;
-            }
+            /* Label styling */
+            td:before { content: attr(data-label); font-weight: 700; color: #333; text-transform: uppercase; font-size: 0.8rem; min-width: 80px; text-align: left; }
+
+            /* Fix Alignment for Data */
+            td > div, td > strong, td > span, td > form { flex: 1; text-align: right; }
+
+            /* ✅ FIX: Specific fix for Total Price Alignment */
+            .price-wrapper { display: flex; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; font-weight: bold; color: #28a745; }
 
             .btn-update { width: 100%; margin-top: 10px; margin-left: 0; padding: 12px; }
             select { width: 100%; margin-bottom: 5px; }
@@ -74,7 +72,7 @@
                 <th>Date</th>
                 <th>Customer</th>
                 <th>Items</th>
-                <th>Total</th>
+                <th style="text-align: right">Total</th>
                 <th>Status</th>
                 <th>Update Action</th>
             </tr>
@@ -84,15 +82,24 @@
                 <td data-label="Date" th:text="${#dates.format(order.orderDate, 'dd-MMM HH:mm')}">Date</td>
 
                 <td data-label="Customer">
-                    <strong th:text="${order.customerName}" style="display:block; color:#333;">Name</strong>
-                    <span th:text="${order.address}" style="font-size:0.85rem; color:#888;">Address</span>
+                    <div>
+                        <strong th:text="${order.customerName}" style="display:block; color:#333; font-size:1rem;">Name</strong>
+                        <span th:text="${order.address}" style="font-size:0.85rem; color:#888; display:block; margin-top:4px;">Address</span>
+                    </div>
                 </td>
 
                 <td data-label="Items">
-                    <div th:each="item : ${order.items}" th:text="'• ' + ${item}" style="font-size:0.9rem;"></div>
+                    <div>
+                        <div th:each="item : ${order.items}" th:text="'• ' + ${item}" style="font-size:0.9rem; margin-bottom:2px;"></div>
+                    </div>
                 </td>
 
-                <td data-label="Total" style="font-weight:bold; color:#28a745;">₹ <span th:text="${order.totalAmount}"></span></td>
+                <td data-label="Total">
+                    <div class="price-wrapper">
+                        <span>₹</span>
+                        <span th:text="${order.totalAmount}">299.00</span>
+                    </div>
+                </td>
 
                 <td data-label="Status">
                     <span th:text="${order.status}" class="badge"

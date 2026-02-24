@@ -20,6 +20,7 @@ public class Order {
 
     // 🟢 FIELD MUST BE NAMED 'customerName' to match controller
     private String customerName;
+    private Double discountAmount;
 
     private String email;
     private String address;
@@ -112,4 +113,11 @@ public class Order {
         this.feedback = feedback;
     }
 
+    public Double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(Double discountAmount) {
+        this.discountAmount = discountAmount;
+    }
 }

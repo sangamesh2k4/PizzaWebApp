@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Menu - Sangamesh's Pizza</title>
 
     <th:block th:if="${_csrf}">
@@ -14,22 +14,38 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        :root { --bg-neutral: #F4F1ED; --brand-tomato: #C0392B; --brand-dark: #2C3E50; --action-green: #2E7D32; --glass-bg: rgba(255, 255, 255, 0.95); }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-neutral); color: var(--brand-dark); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        :root {
+            --bg-neutral: #F4F1ED;
+            --brand-tomato: #C0392B;
+            --brand-dark: #2C3E50;
+            --action-green: #2E7D32;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
 
-        /* Navbar is handled by fragment */
+        /* ✅ FIX 1: Flex Column ensures Footer sticks to bottom */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--brand-dark);
+            margin: 0; padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-        .page-header { margin-top: 80px; padding: 40px 20px; text-align: center; background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%); }
+        /* --- HEADER & SEARCH --- */
+        .page-header { margin-top: 80px; padding: 40px 20px 20px; text-align: center; background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%); }
         .page-header h1 { font-family: 'Oswald', sans-serif; font-size: 3rem; color: var(--brand-dark); text-transform: uppercase; margin-bottom: 20px; }
 
-        .search-box { position: relative; max-width: 500px; margin: 0 auto; }
-        .search-box input { width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #ddd; border-radius: 50px; font-size: 1rem; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
-        .search-box input:focus { border-color: var(--brand-tomato); outline: none; }
+        .search-box { position: relative; max-width: 500px; margin: 0 auto; width: 100%; }
+        .search-box input { width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #ddd; border-radius: 50px; font-size: 1rem; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; background: white; }
+        .search-box input:focus { border-color: var(--brand-tomato); outline: none; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.1); }
         .search-box button { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--brand-tomato); color: white; border: none; padding: 0 25px; border-radius: 40px; cursor: pointer; font-weight: 700; }
 
-        .controls-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; background: white; padding: 15px 30px; border-radius: 50px; width: fit-content; margin: 0 auto 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        /* --- CONTROLS --- */
+        .controls-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; background: white; padding: 15px 30px; border-radius: 50px; width: fit-content; margin: 0 auto 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
         .filter-label { font-weight: 800; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .styled-select { border: none; background: transparent; font-weight: 700; color: var(--brand-dark); cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .styled-select { border: none; background: transparent; font-weight: 700; color: var(--brand-dark); cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.95rem; }
 
         .segmented-control { background: var(--bg-neutral); padding: 5px; border-radius: 30px; display: flex; }
         .segmented-control input { display: none; }
@@ -37,41 +53,84 @@
         #allBtn:checked + label { background: var(--brand-dark); color: white; }
         #vegBtn:checked + label { background: var(--action-green); color: white; }
         #nonVegBtn:checked + label { background: var(--brand-tomato); color: white; }
-
         .vertical-divider { border-left: 1px solid #ddd; height: 30px; }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        /* --- GRID LAYOUT --- */
+        /* ✅ FIX 2: Flex-grow 1 pushes footer down */
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%; /* Ensure it spans width */
+            margin: 0 auto;
+            padding: 0 20px 40px; /* Reduced bottom padding */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            box-sizing: border-box; /* Prevents overflow */
+        }
 
         .card { background: white; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .card-img { width: 100%; height: 200px; object-fit: cover; }
 
         .diet-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; color: white; text-transform: uppercase; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .veg-badge { background: var(--action-green); }
         .nonveg-badge { background: var(--brand-tomato); }
-        .fav-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .fav-btn:hover { transform: scale(1.1); }
+
+        .fav-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.95); width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .fav-btn:active { transform: scale(0.9); }
 
         .card-body { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
         .header-row { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
-        .card-title { margin: 0; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
-        .price-tag { background: var(--brand-tomato); color: white; padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; }
+        .card-title { margin: 0; font-family: 'Oswald', sans-serif; font-size: 1.4rem; line-height: 1.2; }
+        .price-tag { background: var(--brand-tomato); color: white; padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; white-space: nowrap; margin-left: 10px; }
         .card-desc { color: #777; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
 
         .order-form { background: var(--bg-neutral); padding: 15px; border-radius: 12px; margin-top: auto; }
-        .size-select, .note-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Poppins', sans-serif; margin-bottom: 10px; box-sizing: border-box; }
-        .add-btn { width: 100%; background: var(--action-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .size-select, .note-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Poppins', sans-serif; margin-bottom: 10px; box-sizing: border-box; background: white; font-size: 0.9rem; }
+        .add-btn { width: 100%; background: var(--action-green); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .add-btn:hover { background: #1B5E20; }
+        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .pagination { display: flex; justify-content: center; gap: 15px; margin-bottom: 60px; }
-        .page-link { background: white; color: var(--brand-dark); padding: 10px 20px; text-decoration: none; border-radius: 30px; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.2s; }
-        .page-link:hover { background: var(--brand-tomato); color: white; }
+        .pagination {
+            display: flex; justify-content: center; gap: 10px;
+            margin-bottom: 40px; /* Reduced from 60px to decrease gap */
+            flex-wrap: wrap;
+        }
+        .page-link { background: white; color: var(--brand-dark); padding: 10px 20px; text-decoration: none; border-radius: 30px; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
-        /* --- MOBILE ADJUSTMENTS --- */
+        /* --- 📱 MOBILE OPTIMIZATIONS (2 Cards per Row) --- */
         @media (max-width: 768px) {
-            .controls-wrapper { flex-direction: column; width: 90%; gap: 20px; padding: 25px; border-radius: 25px; }
-            .vertical-divider { display: none; } /* Hide divider on mobile */
-            .page-header h1 { font-size: 2rem; }
+            .page-header { margin-top: 60px; padding-bottom: 10px; }
+            .page-header h1 { font-size: 2rem; margin-bottom: 15px; }
+
+            /* Sticky Filters */
+            .controls-wrapper { flex-direction: column; width: 100%; max-width: none; border-radius: 0; margin: 0 0 20px 0; padding: 15px 20px; gap: 15px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #eee; }
+            .vertical-divider { display: none; }
+
+            /* 🟢 2-COLUMN GRID FOR MOBILE */
+            .container {
+                padding: 0 10px 40px; /* Reduced bottom padding */
+                grid-template-columns: 1fr 1fr; /* Force 2 columns */
+                gap: 15px; /* Smaller gap */
+            }
+
+            .card { border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+            .card-img { height: 140px; }
+            .diet-badge { top: 10px; left: 10px; padding: 4px 8px; font-size: 0.65rem; }
+            .fav-btn { top: 10px; right: 10px; width: 32px; height: 32px; font-size: 1rem; }
+
+            .card-body { padding: 15px; }
+            .header-row { flex-direction: column; gap: 5px; margin-bottom: 8px; }
+            .card-title { font-size: 1rem; }
+            .price-tag { margin-left: 0; padding: 2px 8px; font-size: 0.8rem; align-self: flex-start; }
+            .card-desc { font-size: 0.8rem; line-height: 1.3; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+            .order-form { padding: 10px; }
+            .size-select, .note-input { padding: 8px; font-size: 0.85rem; margin-bottom: 8px; }
+            .add-btn { padding: 10px; font-size: 0.9rem; }
+
+            .search-box input { font-size: 1rem; padding: 12px 45px 12px 20px; }
         }
     </style>
 </head>
@@ -79,23 +138,23 @@
 
 <div th:replace="~{navbar :: nav(activePage='menu')}"></div>
 
-<div th:if="${!isStoreOpen}" style="margin-top: 80px; background: #c0392b; color: white; text-align: center; padding: 15px; font-weight: 700;">
-    🌙 Our kitchen is closed. Ordering is disabled!
+<div th:if="${!isStoreOpen}" style="margin-top: 80px; background: #c0392b; color: white; text-align: center; padding: 15px; font-weight: 700; position: sticky; top: 60px; z-index: 100;">
+    <i class="fas fa-store-slash"></i> Our kitchen is closed. Ordering is disabled!
 </div>
 
 <div class="page-header" th:style="${!isStoreOpen ? 'margin-top: 0;' : ''}">
     <h1 th:text="${category != null ? category + ' Menu' : 'Our Menu'}">Our Menu</h1>
     <form th:action="@{/menu}" method="get" class="search-box">
-        <input type="text" name="keyword" placeholder="Search for delicious items..." th:value="${keyword}">
+        <input type="text" name="keyword" placeholder="Find your craving..." th:value="${keyword}">
         <button type="submit"><i class="fas fa-search"></i></button>
     </form>
 </div>
 
 <div class="controls-wrapper">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="filter-label">Sort:</span>
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center;">
+        <span class="filter-label"><i class="fas fa-sort"></i> Sort:</span>
         <select id="sortSelect" onchange="applySort()" class="styled-select">
-            <option value="default">Default</option>
+            <option value="default">Recommended</option>
             <option value="priceLow">Price: Low to High</option>
             <option value="priceHigh">Price: High to Low</option>
             <option value="name">Name: A-Z</option>
@@ -104,8 +163,7 @@
 
     <div th:if="${category != 'Drink' and category != 'Drinks'}" class="vertical-divider"></div>
 
-    <div th:if="${category != 'Drink' and category != 'Drinks'}" style="display: flex; align-items: center; gap: 10px;">
-        <span class="filter-label">Filter:</span>
+    <div th:if="${category != 'Drink' and category != 'Drinks'}" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
         <div class="segmented-control">
             <input type="radio" name="diet" id="allBtn" onchange="applyFilters()" checked>
             <label for="allBtn">All</label>
@@ -118,10 +176,12 @@
 </div>
 
 <div class="container" id="menuGrid">
-    <div th:if="${pizzas.empty}" style="grid-column: 1 / -1; text-align: center; background: white; padding: 60px; border-radius: 20px;">
-        <i class="fas fa-utensils" style="font-size: 3rem; color: #ddd; margin-bottom: 20px;"></i>
-        <h3 style="color: #555;">No items found.</h3>
-        <a th:href="@{/menu}" style="color: var(--brand-tomato); font-weight: 700; text-decoration: none;">Clear Search</a>
+
+    <div th:if="${pizzas.empty}" style="grid-column: 1 / -1; text-align: center; background: white; padding: 60px 20px; border-radius: 20px;">
+        <i class="fas fa-cookie-bite" style="font-size: 4rem; color: #eee; margin-bottom: 20px;"></i>
+        <h3 style="color: #555; margin: 0 0 10px;">No items found.</h3>
+        <p style="color: #888; margin-bottom: 20px;">Try adjusting your search.</p>
+        <a th:href="@{/menu}" style="color: var(--brand-tomato); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--brand-tomato);">View Full Menu</a>
     </div>
 
     <div class="card pizza-card" th:each="pizza : ${pizzas}"
@@ -135,7 +195,8 @@
                 <span class="fav-icon" th:text="${session.favorites != null && session.favorites.contains(pizza.id) ? '❤️' : '🤍'}">🤍</span>
             </button>
 
-            <img th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://via.placeholder.com/300'}" class="card-img" alt="Item">
+            <img th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://via.placeholder.com/400x300?text=No+Image'}"
+                 class="card-img" alt="Item" loading="lazy">
         </div>
 
         <div class="card-body">
@@ -150,30 +211,35 @@
                     <option value="" disabled selected>Select Size</option>
                     <option th:if="${pizza.sizes != null}" th:each="entry : ${pizza.sizes}" th:value="${entry.key}" th:text="${entry.key} + ' - ₹' + ${entry.value}"></option>
                     <th:block th:if="${pizza.sizes == null or pizza.sizes.isEmpty()}">
-                        <option value="Standard">Standard (Base Price)</option>
+                        <option value="Standard">Standard</option>
                         <th:block th:if="${pizza.category != null and pizza.category.toLowerCase().contains('pizza')}">
                             <option value="Medium">Medium (+₹70)</option>
                             <option value="Large">Large (+₹130)</option>
                         </th:block>
                     </th:block>
                 </select>
-                <input type="text" name="note" class="note-input" placeholder="Any special requests?">
-                <button type="submit" class="add-btn" th:disabled="${!isStoreOpen}">Add to Cart <i class="fas fa-plus"></i></button>
+
+                <input type="text" name="note" class="note-input" placeholder="Note (Optional)">
+
+                <button type="submit" class="add-btn" th:disabled="${!isStoreOpen}">
+                    Add <i class="fas fa-plus"></i>
+                </button>
             </form>
         </div>
     </div>
 </div>
 
 <div class="pagination" th:if="${totalPages > 1}">
-    <a class="page-link" th:if="${currentPage > 0}" th:href="@{/menu(page=${currentPage - 1}, keyword=${keyword}, category=${category})}">Prev</a>
-    <span style="align-self: center; font-weight: 700; color: var(--brand-dark);">Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></span>
-    <a class="page-link" th:if="${currentPage + 1 < totalPages}" th:href="@{/menu(page=${currentPage + 1}, keyword=${keyword}, category=${category})}">Next</a>
+    <a class="page-link" th:if="${currentPage > 0}" th:href="@{/menu(page=${currentPage - 1}, keyword=${keyword}, category=${category})}"><i class="fas fa-arrow-left"></i> Prev</a>
+    <span style="align-self: center; font-weight: 700; color: var(--brand-dark); font-size: 0.9rem;">
+        Page <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span>
+    </span>
+    <a class="page-link" th:if="${currentPage + 1 < totalPages}" th:href="@{/menu(page=${currentPage + 1}, keyword=${keyword}, category=${category})}">Next <i class="fas fa-arrow-right"></i></a>
 </div>
 
 <div th:replace="~{footer :: customerFooter}"></div>
 
 <script>
-    /* [Scripts Remain the Same] */
     const csrfMeta = document.querySelector("meta[name='_csrf']");
     const headerMeta = document.querySelector("meta[name='_csrf_header']");
     const headers = { 'X-Requested-With': 'XMLHttpRequest' };
@@ -212,6 +278,8 @@
 
     function toggleFav(btn) {
         const id = btn.getAttribute('data-id');
+        btn.style.transform = 'scale(1.3)';
+        setTimeout(() => btn.style.transform = 'scale(1)', 200);
         fetch('/favorites/toggle/' + id, { method: 'POST', headers: headers })
         .then(res => res.json())
         .then(data => { btn.querySelector('.fav-icon').innerText = data.isFavorite ? '❤️' : '🤍'; })

@@ -27,6 +27,21 @@ public class AdminCouponController {
         model.addAttribute("coupon", new Coupon());
         return "admin-coupon-form"; // We will create this HTML too
     }
+    // ✅ Handle Coupon Creation (The missing part)
+    @PostMapping("/add")
+    public String saveCoupon(@RequestParam String code,
+                             @RequestParam int discount,
+                             @RequestParam(defaultValue = "0") int minOrder) {
+        Coupon coupon = new Coupon();
+        coupon.setCode(code.toUpperCase());
+        coupon.setDiscountPercent(discount);
+        coupon.setMinOrderAmount(minOrder);
+        coupon.setActive(true);
+
+        couponRepository.save(coupon);
+
+        return "redirect:/admin/coupons";
+    }
 
     // 3. Save the Coupon
     @PostMapping("/save")

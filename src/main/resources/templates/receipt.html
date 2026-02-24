@@ -2,38 +2,64 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt - Sangamesh's Pizza</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; background: #eee; padding: 40px; display: flex; justify-content: center; }
-        .receipt { background: white; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+        body { font-family: 'Courier New', Courier, monospace; background: #eee; padding: 20px; display: flex; justify-content: center; min-height: 100vh; align-items: flex-start; margin: 0; }
 
-        /* Jagged Edge Effect */
+        .receipt {
+            background: white; padding: 30px; width: 100%; max-width: 380px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;
+            margin-top: 20px;
+        }
+
+        /* Jagged Edge Effect (Thermal Paper Look) */
         .receipt::after {
             content: ""; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px;
             background: radial-gradient(circle, transparent, transparent 50%, white 50%, white);
-            background-size: 20px 20px;
+            background-size: 10px 10px;
+        }
+        .receipt::before {
+            content: ""; position: absolute; top: -10px; left: 0; width: 100%; height: 10px;
+            background: radial-gradient(circle, white 50%, transparent 50%, transparent);
+            background-size: 10px 10px;
         }
 
-        .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .logo { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
-        .meta { font-size: 0.8rem; color: #555; }
+        .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 15px; }
+        .logo { font-size: 1.4rem; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: -1px; }
+        .meta { font-size: 0.75rem; color: #555; margin-bottom: 3px; }
 
-        .info { font-size: 0.85rem; margin-bottom: 20px; line-height: 1.4; }
+        .info { font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+        .info strong { display: inline-block; width: 70px; }
 
-        table { width: 100%; font-size: 0.9rem; border-collapse: collapse; margin-bottom: 20px; }
-        th { text-align: left; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        td { padding: 8px 0; }
-        .qty { text-align: center; }
-        .price { text-align: right; }
+        table { width: 100%; font-size: 0.85rem; border-collapse: collapse; margin-bottom: 15px; }
+        th { text-align: left; border-bottom: 1px dashed #333; padding-bottom: 5px; text-transform: uppercase; font-size: 0.75rem; }
+        td { padding: 6px 0; vertical-align: top; }
+        .qty { text-align: center; width: 30px; }
+        .price { text-align: right; width: 70px; white-space: nowrap; }
+        .item-name { padding-right: 5px; }
+        .item-note { display: block; font-size: 0.7rem; color: #777; font-style: italic; margin-top: 2px; }
 
         .totals { border-top: 2px dashed #333; padding-top: 10px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
-        .grand-total { font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
+        .row.discount { color: #d63031; }
+        .grand-total { font-weight: bold; font-size: 1.3rem; margin-top: 12px; border-top: 2px solid #333; padding-top: 10px; }
 
-        .print-btn { display: block; width: 100%; padding: 12px; background: #333; color: white; text-align: center; text-decoration: none; font-weight: bold; margin-top: 30px; border-radius: 5px; cursor: pointer; font-family: sans-serif; }
-        .back-link { display: block; text-align: center; margin-top: 15px; font-size: 0.8rem; color: #666; text-decoration: none; font-family: sans-serif; }
+        .footer-text { text-align: center; font-size: 0.75rem; margin-top: 25px; color: #555; line-height: 1.4; }
 
-        @media print { .print-btn, .back-link { display: none; } body { background: white; } .receipt { box-shadow: none; } }
+        .actions { margin-top: 30px; }
+        .print-btn { display: block; width: 100%; padding: 12px; background: #333; color: white; text-align: center; text-decoration: none; font-weight: bold; border-radius: 4px; cursor: pointer; font-family: sans-serif; font-size: 0.9rem; transition: 0.2s; }
+        .print-btn:hover { background: #000; }
+        .back-link { display: block; text-align: center; margin-top: 15px; font-size: 0.85rem; color: #666; text-decoration: none; font-family: sans-serif; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; padding: 0; margin: 0; height: auto; }
+            .receipt { box-shadow: none; width: 100%; max-width: 100%; padding: 0; margin: 0; }
+            .receipt::after, .receipt::before { display: none; }
+            .actions { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -41,33 +67,72 @@
 <div class="receipt">
     <div class="header">
         <div class="logo">🍕 SANGAMESH'S PIZZA</div>
-        <div class="meta">Order #<span th:text="${order.id}"></span></div>
+        <div class="meta">ORDER #<span th:text="${order.id}"></span></div>
         <div class="meta" th:text="${#dates.format(order.orderDate, 'dd-MMM-yyyy HH:mm')}"></div>
+        <div class="meta">Status: <span th:text="${order.status}">CONFIRMED</span></div>
     </div>
 
     <div class="info">
-        <strong>Customer:</strong> <span th:text="${order.customerName}"></span><br>
-        <strong>Address:</strong> <span th:text="${order.address}"></span>
+        <div><strong>Name:</strong> <span th:text="${order.customerName}">John Doe</span></div>
+        <div><strong>Email:</strong> <span th:text="${order.email}">john@example.com</span></div>
+        <div th:if="${order.address != null}"><strong>Addr:</strong> <span th:text="${order.address}">123 Street</span></div>
     </div>
 
     <table>
-        <thead><tr><th>Item</th><th class="qty">Qty</th><th class="price">Amt</th></tr></thead>
+        <thead>
+        <tr>
+            <th class="item-name">Item</th>
+            <th class="qty">Qty</th>
+            <th class="price">Amt</th>
+        </tr>
+        </thead>
         <tbody>
-        <tr th:each="itemStr : ${order.items}" th:with="parts=${#strings.arraySplit(itemStr, '|')}">
-            <td th:text="${parts[0]}">Pizza</td> <td class="qty" th:text="${#strings.replace(parts[1], 'Qty: ', '')}">1</td> <td class="price" th:text="'₹' + ${#strings.replace(parts[2], '₹', '')}">199</td> </tr>
+        <tr th:each="itemStr : ${order.items}" th:with="
+                parts=${#strings.arraySplit(itemStr, '|')},
+                namePart=${parts[0]},
+                qtyPart=${parts.length > 1 ? parts[1] : '1'},
+                pricePart=${parts.length > 2 ? parts[2] : '0'},
+                hasNote=${#strings.contains(pricePart, '[Note:')},
+                cleanPrice=${hasNote ? #strings.substringBefore(pricePart, '[') : pricePart},
+                noteText=${hasNote ? #strings.substringAfter(#strings.substringBefore(pricePart, ']'), ':') : ''}
+            ">
+            <td class="item-name">
+                <span th:text="${namePart}">Pizza</span>
+                <span th:if="${hasNote}" class="item-note" th:text="'Note: ' + ${noteText}"></span>
+            </td>
+            <td class="qty" th:text="${#strings.replace(qtyPart, 'Qty: ', '')}">1</td>
+            <td class="price" th:text="'₹' + ${#strings.replace(#strings.trim(cleanPrice), '₹', '')}">199</td>
+        </tr>
         </tbody>
     </table>
 
     <div class="totals">
-        <div class="row"><span>Subtotal</span><span th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount / 1.05, 1, 2)}"></span></div>
-        <div class="row"><span>Tax (5%)</span><span th:text="'₹' + ${#numbers.formatDecimal((order.totalAmount / 1.05) * 0.05, 1, 2)}"></span></div>
-        <div class="row grand-total"><span>TOTAL</span><span th:text="'₹' + ${order.totalAmount}"></span></div>
+        <div class="row">
+            <span>Subtotal (Inc. Tax)</span>
+            <span th:text="'₹' + ${order.totalAmount + (order.discountAmount != null ? order.discountAmount : 0.0)}"></span>
+        </div>
+
+        <div class="row discount" th:if="${order.discountAmount != null and order.discountAmount > 0}">
+            <span>Discount</span>
+            <span th:text="'- ₹' + ${#numbers.formatDecimal(order.discountAmount, 1, 2)}"></span>
+        </div>
+
+        <div class="row grand-total">
+            <span>TOTAL PAID</span>
+            <span th:text="'₹' + ${order.totalAmount}"></span>
+        </div>
     </div>
 
-    <p style="text-align: center; font-size: 0.8rem; margin-top: 30px;">Thank you for your order!</p>
+    <div class="footer-text">
+        <p>Thank you for dining with us!<br>
+            For support: support@sangameshpizza.com</p>
+        <p style="font-size: 0.65rem; margin-top: 10px;">Generated on <span th:text="${#dates.format(#dates.createNow(), 'dd-MMM-yyyy HH:mm')}"></span></p>
+    </div>
 
-    <a href="#" onclick="window.print()" class="print-btn">Print Receipt</a>
-    <a th:href="@{/orders}" class="back-link">← Back to Orders</a>
+    <div class="actions">
+        <a href="#" onclick="window.print(); return false;" class="print-btn">🖨️ Print Receipt</a>
+        <a th:href="@{/orders}" class="back-link">← Back to My Orders</a>
+    </div>
 </div>
 
 </body>
