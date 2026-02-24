@@ -2,85 +2,104 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        /* Shared CSS included via reuse or copy/paste for standalone */
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
-        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
-        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; }
-        .nav-links a.active { color: white; border-bottom: 2px solid #ffc107; }
-        .logout { background: #dc3545; padding: 5px 15px; border-radius: 4px; color: white; text-decoration: none; }
+        /* Shared Admin CSS */
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        h1 { margin-bottom: 20px; border-left: 5px solid #ffc107; padding-left: 15px; color: #333; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        h1 { margin-bottom: 25px; border-left: 5px solid #ffc107; padding-left: 15px; color: #333; font-family: 'Oswald', sans-serif; }
 
+        /* Message Grid */
         .msg-grid { display: grid; gap: 20px; }
 
         .msg-card {
-            background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 4px solid #ddd; transition: 0.2s; position: relative;
+            background: white; padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #ddd;
+            transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
+
+        /* Unread State */
         .msg-card.unread { border-left-color: #ffc107; background: #fffcf5; }
-        .msg-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-        .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .sender-name { font-weight: bold; color: #333; }
-        .sender-email { color: #666; font-size: 0.9rem; margin-left: 10px; }
-        .msg-date { font-size: 0.85rem; color: #999; }
+        .msg-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        .msg-subject { font-weight: bold; display: block; margin-bottom: 5px; color: #444; }
-        .msg-body { color: #555; line-height: 1.5; font-size: 0.95rem; }
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: flex-start; }
 
-        .action-bar { margin-top: 15px; text-align: right; }
-        .btn-read { color: #28a745; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-right: 15px; }
-        .btn-del { color: #dc3545; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
+        .sender-name { font-weight: 700; color: #333; font-size: 1.1rem; }
+        .sender-email { color: #666; font-size: 0.9rem; margin-left: 8px; font-weight: normal; }
+        .msg-date { font-size: 0.85rem; color: #888; white-space: nowrap; }
 
-        .empty-state { text-align: center; color: #999; margin-top: 50px; }
-        .empty-icon { font-size: 3rem; display: block; margin-bottom: 10px; opacity: 0.5; }
+        .msg-subject { font-weight: 700; display: block; margin-bottom: 8px; color: #444; font-size: 1rem; }
+        .msg-body { color: #555; line-height: 1.6; font-size: 0.95rem; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+
+        /* Action Buttons */
+        .action-bar { margin-top: 20px; text-align: right; display: flex; justify-content: flex-end; gap: 15px; }
+
+        .btn-read {
+            color: #28a745; text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            padding: 6px 12px; border-radius: 6px; transition: 0.2s; background: #e8f5e9;
+        }
+        .btn-read:hover { background: #28a745; color: white; }
+
+        .btn-del {
+            color: #dc3545; text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            padding: 6px 12px; border-radius: 6px; transition: 0.2s; background: #fff5f5;
+        }
+        .btn-del:hover { background: #dc3545; color: white; }
+
+        /* Empty State */
+        .empty-state { text-align: center; color: #888; margin-top: 60px; padding: 40px; }
+        .empty-icon { font-size: 4rem; display: block; margin-bottom: 15px; opacity: 0.4; }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .msg-header { flex-direction: column; gap: 5px; }
+            .sender-email { display: block; margin-left: 0; margin-top: 2px; }
+            .msg-date { align-self: flex-start; margin-top: 5px; font-size: 0.8rem; background: #eee; padding: 2px 8px; border-radius: 10px; }
+
+            .action-bar { justify-content: space-between; margin-top: 15px; }
+            .btn-read, .btn-del { flex: 1; text-align: center; }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
-    <div class="nav-links">
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/orders" class="active">Orders</a>
-        <a href="/admin/menu">Menu</a>
-        <a href="/admin/users">Users</a>
-        <a href="/admin/ratings">Ratings</a>
-        <a href="/admin/coupons">Coupons</a>
-        <a href="/admin/messages">Messages</a>
-        <a href="/logout" class="logout">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{admin-navbar :: nav(activePage='messages')}"></div>
 
 <div class="container">
     <h1>📬 Customer Messages</h1>
 
-    <div th:if="${messages.empty}" class="empty-state">
+    <div th:if="${messages == null or messages.empty}" class="empty-state">
         <span class="empty-icon">📭</span>
         <h3>Inbox Zero!</h3>
-        <p>No new messages from customers.</p>
+        <p>No new messages from customers right now.</p>
     </div>
 
-    <div class="msg-grid">
+    <div class="msg-grid" th:if="${messages != null and !messages.empty}">
         <div th:each="msg : ${messages}" class="msg-card" th:classappend="${!msg.read} ? 'unread'">
             <div class="msg-header">
                 <div>
                     <span class="sender-name" th:text="${msg.name}">John Doe</span>
-                    <span class="sender-email" th:text="'&lt;' + ${msg.email} + '&gt;'"></span>
+                    <span class="sender-email" th:text="'&lt;' + ${msg.email} + '&gt;'">john@example.com</span>
                 </div>
-                <span class="msg-date" th:text="${#dates.format(msg.date, 'dd MMM HH:mm')}">12:30 PM</span>
+                <span class="msg-date" th:text="${#dates.format(msg.date, 'dd MMM, hh:mm a')}">12 Feb, 12:30 PM</span>
             </div>
 
             <span class="msg-subject" th:text="${msg.subject}">Order Inquiry</span>
             <p class="msg-body" th:text="${msg.message}">I have a question about my order...</p>
 
             <div class="action-bar">
-                <a th:if="${!msg.read}" th:href="@{/admin/messages/read/{id}(id=${msg.id})}" class="btn-read">✔ Mark Read</a>
-                <a th:href="@{/admin/messages/delete/{id}(id=${msg.id})}" class="btn-del" onclick="return confirm('Delete message?')">🗑 Delete</a>
+                <a th:if="${!msg.read}" th:href="@{/admin/messages/read/{id}(id=${msg.id})}" class="btn-read">
+                    <i class="fas fa-check"></i> Mark Read
+                </a>
+                <a th:href="@{/admin/messages/delete/{id}(id=${msg.id})}" class="btn-del" onclick="return confirm('Delete message permanently?')">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </a>
             </div>
         </div>
     </div>

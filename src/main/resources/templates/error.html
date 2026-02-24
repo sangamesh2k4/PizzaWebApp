@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Oops! - Sangamesh's Pizza</title>
@@ -20,7 +21,7 @@
         p { color: #666; margin-bottom: 30px; line-height: 1.6; }
         .btn {
             background: #2C3E50; color: white; padding: 15px 35px; border-radius: 50px;
-            text-decoration: none; font-weight: 700; transition: 0.3s; display: inline-block;
+            text-decoration: none; font-weight: 700; transition: 0.3s; display: inline-block; cursor: pointer;
         }
         .btn:hover { background: #C0392B; transform: translateY(-3px); }
 
@@ -33,7 +34,15 @@
     <h1>OOPS!</h1>
     <h2>We burned the pizza...</h2>
     <p>Something went wrong on our end. Our chef (the developer) has been notified and is checking the oven logs.</p>
-    <a href="/home" class="btn">Return to Safety</a>
+
+    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/dashboard}" class="btn">
+        Return to Dashboard
+    </a>
+
+    <a sec:authorize="!hasAuthority('ADMIN')" th:href="@{/home}" class="btn">
+        Return to Safety
+    </a>
+
 </div>
 </body>
 </html>

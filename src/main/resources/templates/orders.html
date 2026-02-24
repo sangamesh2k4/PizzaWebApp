@@ -27,32 +27,10 @@
             display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        /* --- 1. GLASS NAVBAR --- */
-        nav {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            padding: 15px 5%; box-sizing: border-box;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-        .logo {
-            font-family: 'Oswald', sans-serif; font-size: 1.5rem;
-            color: var(--brand-tomato); text-decoration: none;
-            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
-        }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: var(--brand-dark); text-decoration: none; font-weight: 600; transition: 0.3s; }
-        .nav-links a:hover { color: var(--brand-tomato); }
-        .logout-btn {
-            border: 2px solid var(--brand-tomato); color: var(--brand-tomato) !important;
-            padding: 6px 20px; border-radius: 25px; transition: 0.3s;
-        }
-        .logout-btn:hover { background: var(--brand-tomato); color: white !important; }
-
-        /* --- 2. HEADER --- */
+        /* HEADER FIX: Margin-top prevents it from hiding behind Nav */
         .page-header {
-            margin-top: 100px; padding: 40px 5%; text-align: center;
+            margin-top: 80px; /* Pushes content down below fixed nav */
+            padding: 40px 5%; text-align: center;
             background: radial-gradient(circle at center, #fadbd8 0%, transparent 70%);
         }
         .page-header h1 {
@@ -132,11 +110,11 @@
         .empty-icon { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
 
         @media (max-width: 768px) {
-            .nav-links { display: none; }
+            .page-header h1 { font-size: 2rem; }
             .card-body { flex-direction: column; align-items: flex-start; }
             .price-section { text-align: left; margin-top: 10px; }
-            .card-footer { justify-content: space-between; }
-            .btn { flex: 1; justify-content: center; }
+            .card-footer { justify-content: space-between; flex-wrap: wrap; }
+            .btn { flex: 1; justify-content: center; min-width: 120px; }
         }
     </style>
 </head>

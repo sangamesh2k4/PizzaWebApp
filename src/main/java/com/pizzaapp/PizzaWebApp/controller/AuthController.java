@@ -26,6 +26,6 @@ public class AuthController {
             return "register";
         }
         userService.saveUser(user);
-        return "redirect:/login"; // redirect to login3 after registration
+        return "redirect:/login"; // redirect to login after registration
     }
 }

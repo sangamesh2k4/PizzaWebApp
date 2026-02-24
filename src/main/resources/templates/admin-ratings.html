@@ -2,55 +2,68 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ratings & Reviews - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Base Admin CSS */
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
-        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
-        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
-        .nav-links a:hover, .active { color: white; border-bottom: 2px solid #ffc107; padding-bottom: 2px; }
-        .logout { background: #dc3545; padding: 6px 15px; border-radius: 4px; color: white !important; border: none; font-weight: bold; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        h1 { border-left: 5px solid #ffc107; padding-left: 15px; color: #333; margin-bottom: 20px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        h1 { border-left: 5px solid #ffc107; padding-left: 15px; color: #333; margin-bottom: 25px; font-family: 'Oswald', sans-serif; }
 
         /* Stats Summary */
-        .rating-summary { background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; justify-content: space-around; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .rating-summary {
+            background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px;
+            display: flex; justify-content: space-around; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
         .stat-box { text-align: center; }
-        .stat-num { font-size: 2rem; font-weight: bold; color: #333; }
-        .stat-label { color: #666; font-size: 0.9rem; text-transform: uppercase; }
+        .stat-num { font-size: 2.5rem; font-weight: 700; color: #333; font-family: 'Oswald', sans-serif; }
+        .stat-label { color: #777; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
         /* Reviews List */
-        .review-card { background: white; border-bottom: 1px solid #eee; padding: 20px; display: flex; gap: 20px; }
-        .review-card:first-child { border-top-left-radius: 8px; border-top-right-radius: 8px; }
-        .review-card:last-child { border-bottom: none; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+        .reviews-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
 
-        .star-box { width: 60px; text-align: center; background: #fffcf5; border-radius: 8px; padding: 5px; border: 1px solid #ffeeba; height: fit-content; }
-        .star-val { font-size: 1.5rem; font-weight: bold; color: #ffc107; display: block; }
-        .star-icon { color: #ffc107; }
+        .review-card {
+            border-bottom: 1px solid #f0f0f0; padding: 25px; display: flex; gap: 20px;
+            transition: background 0.2s;
+        }
+        .review-card:last-child { border-bottom: none; }
+        .review-card:hover { background: #fafafa; }
+
+        .star-box {
+            min-width: 70px; text-align: center; background: #fffcf5; border-radius: 12px;
+            padding: 10px 5px; border: 1px solid #ffeeba; height: fit-content;
+        }
+        .star-val { font-size: 1.5rem; font-weight: bold; color: #ffc107; display: block; font-family: 'Oswald', sans-serif; }
+        .star-icon { color: #ffc107; font-size: 0.8rem; }
 
         .review-content { flex: 1; }
-        .review-meta { margin-bottom: 5px; font-size: 0.9rem; color: #777; }
-        .order-link { color: #007bff; text-decoration: none; font-weight: bold; }
-        .review-text { color: #444; font-style: italic; background: #f9f9f9; padding: 12px; border-radius: 5px; margin-top: 5px; border-left: 3px solid #ddd; }
+        .review-meta { margin-bottom: 10px; font-size: 0.9rem; color: #888; }
+        .order-link { color: #007bff; text-decoration: none; font-weight: bold; background: #e7f1ff; padding: 2px 6px; border-radius: 4px; }
+
+        .review-text {
+            color: #444; font-style: italic; background: #f8f9fa; padding: 15px;
+            border-radius: 8px; margin-top: 5px; border-left: 4px solid #ddd; line-height: 1.5;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .rating-summary { flex-direction: column; gap: 20px; }
+            .stat-box { border-bottom: 1px solid #eee; padding-bottom: 15px; }
+            .stat-box:last-child { border-bottom: none; padding-bottom: 0; }
+
+            .review-card { flex-direction: column; gap: 15px; }
+            .star-box { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 5px; }
+            .star-val { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
-    <div class="nav-links">
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/orders" class="active">Orders</a>
-        <a href="/admin/menu">Menu</a>
-        <a href="/admin/users">Users</a>
-        <a href="/admin/ratings">Ratings</a>
-        <a href="/admin/coupons">Coupons</a>
-        <a href="/admin/messages">Messages</a>
-        <a href="/logout" class="logout">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{admin-navbar :: nav(activePage='ratings')}"></div>
 
 <div class="container">
     <h1>⭐ Customer Feedback</h1>
@@ -70,22 +83,27 @@
         </div>
     </div>
 
-    <div style="background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div class="reviews-container">
         <div th:each="review : ${reviews}" class="review-card">
             <div class="star-box">
                 <span class="star-val" th:text="${review.rating}">5</span>
-                <span class="star-icon">★</span>
+                <span class="star-icon">STARS</span>
             </div>
             <div class="review-content">
                 <div class="review-meta">
-                    <strong>Order #<a th:href="@{/admin/orders(id=${review.orderId})}" class="order-link" th:text="${review.orderId}">101</a></strong>
+                    <strong>Order <a th:href="@{/admin/orders(id=${review.orderId})}" class="order-link" th:text="'#' + ${review.orderId}">#101</a></strong>
                     &bull; <span th:text="${#dates.format(review.date, 'dd MMM yyyy')}">12 Feb</span>
-                    &bull; <span th:text="${review.customerName}">Customer Name</span>
+                    &bull; <strong th:text="${review.customerName}" style="color:#333;">Customer Name</strong>
                 </div>
                 <div class="review-text" th:text="${review.feedback}">
                     "Great pizza! Arrived hot and cheese was perfect."
                 </div>
             </div>
+        </div>
+
+        <div th:if="${reviews == null or reviews.empty}" style="padding:40px; text-align:center; color:#888;">
+            <i class="far fa-star" style="font-size:3rem; margin-bottom:10px; opacity:0.3;"></i>
+            <p>No reviews yet.</p>
         </div>
     </div>
 

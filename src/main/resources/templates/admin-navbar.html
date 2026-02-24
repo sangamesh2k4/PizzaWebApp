@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="nav(activePage)">
+    <style>
+        /* --- ADMIN NAVBAR STYLES --- */
+        nav {
+            background: #343a40; padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .brand {
+            font-family: 'Oswald', sans-serif; font-size: 1.5rem;
+            color: #ffc107; text-decoration: none; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+
+        .nav-links a {
+            color: #ccc; text-decoration: none; font-weight: 500;
+            transition: 0.3s; font-size: 0.95rem; padding-bottom: 2px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: white; border-bottom: 2px solid #ffc107;
+        }
+
+        .logout {
+            background: #dc3545; padding: 8px 18px; border-radius: 6px;
+            color: white !important; border: none; font-weight: bold;
+            cursor: pointer; text-decoration: none; transition: 0.3s;
+            border-bottom: none !important;
+        }
+        .logout:hover { background: #c82333; }
+
+        /* HAMBURGER ICON (Hidden on Desktop) */
+        .menu-toggle { display: none; font-size: 1.5rem; color: #ffc107; cursor: pointer; }
+
+        /* --- MOBILE RESPONSIVE RULES --- */
+        @media (max-width: 900px) {
+            nav { padding: 15px 20px; }
+
+            .nav-links {
+                display: none; /* Hidden by default */
+                flex-direction: column;
+                position: absolute; top: 100%; left: 0; width: 100%;
+                background: #343a40; padding: 20px 0;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+                border-top: 1px solid rgba(255,255,255,0.1);
+                gap: 0;
+            }
+
+            .nav-links.active { display: flex; } /* Shown when toggled */
+
+            .nav-links a {
+                width: 100%; text-align: center; padding: 15px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                font-size: 1.1rem;
+            }
+
+            .nav-links a:hover, .nav-links a.active {
+                background: rgba(255, 255, 255, 0.05);
+                color: #ffc107; border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+
+            .logout {
+                width: 80%; margin: 20px auto 0; text-align: center; display: block;
+            }
+
+            .menu-toggle { display: block; } /* Show Hamburger */
+        }
+    </style>
+
+    <a th:href="@{/admin/dashboard}" class="brand">
+        <i class="fas fa-shield-alt"></i> ADMIN PANEL
+    </a>
+
+    <div class="menu-toggle" onclick="toggleAdminMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="nav-links" id="adminNavLinks">
+        <a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active'">Dashboard</a>
+        <a th:href="@{/admin/orders}" th:classappend="${activePage == 'orders'} ? 'active'">Orders</a>
+        <a th:href="@{/admin/menu}" th:classappend="${activePage == 'menu'} ? 'active'">Menu</a>
+        <a th:href="@{/admin/users}" th:classappend="${activePage == 'users'} ? 'active'">Users</a>
+        <a th:href="@{/admin/ratings}" th:classappend="${activePage == 'ratings'} ? 'active'">Ratings</a>
+        <a th:href="@{/admin/coupons}" th:classappend="${activePage == 'coupons'} ? 'active'">Coupons</a>
+        <a th:href="@{/admin/messages}" th:classappend="${activePage == 'messages'} ? 'active'">Messages</a>
+        <a th:href="@{/logout}" class="logout">Logout</a>
+    </div>
+
+    <script>
+        function toggleAdminMenu() {
+            document.getElementById('adminNavLinks').classList.toggle('active');
+        }
+    </script>
+</nav>
+
+</body>
+</html>

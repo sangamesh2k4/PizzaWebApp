@@ -12,13 +12,6 @@
         /* --- ADMIN THEME (Dark & Gold) --- */
         body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
 
-        /* Navbar */
-        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .brand { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: #ffc107; text-decoration: none; letter-spacing: 1px; }
-        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; font-size: 0.95rem; }
-        .nav-links a:hover, .active { color: white; border-bottom: 2px solid #ffc107; padding-bottom: 2px; }
-        .logout { background: #dc3545; padding: 6px 15px; border-radius: 4px; color: white !important; border: none; font-weight: bold; cursor: pointer; text-decoration: none; }
-
         /* Container */
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
@@ -73,19 +66,7 @@
 </head>
 <body>
 
-<nav>
-    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
-    <div class="nav-links">
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/orders" class="active">Orders</a>
-        <a href="/admin/menu">Menu</a>
-        <a href="/admin/users">Users</a>
-        <a href="/admin/ratings">Ratings</a>
-        <a href="/admin/coupons">Coupons</a>
-        <a href="/admin/messages">Messages</a>
-        <a href="/logout" class="logout">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{admin-navbar :: nav(activePage='dashboard')}"></div>
 
 <div class="container">
 
@@ -93,8 +74,6 @@
         <h1>Dashboard Overview</h1>
         <p>Here is what's happening at Sangamesh's Pizza today.</p>
     </div>
-
-
 
     <div class="stats-grid">
         <div class="stat-card card-revenue">
