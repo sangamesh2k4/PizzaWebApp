@@ -2,54 +2,68 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Center - Users</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; }
-        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; letter-spacing: 0.5px; }
-        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
-        .nav-links a:hover, .active { color: white; border-bottom: 2px solid #ffc107; padding-bottom: 2px; }
-        .logout { background: #dc3545; padding: 6px 15px; border-radius: 4px; color: white !important; border: none; font-weight: bold; }
+        /* Shared CSS */
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; padding-bottom: 40px; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        h1 { border-left: 5px solid #007bff; padding-left: 15px; color: #333; }
+        h1 { border-left: 5px solid #007bff; padding-left: 15px; color: #333; font-family: 'Oswald', sans-serif; }
 
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        th { background: #343a40; color: white; padding: 15px; text-align: left; text-transform: uppercase; font-size: 0.85rem; }
+        th { background: #343a40; color: white; padding: 15px; text-align: left; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         td { padding: 15px; border-bottom: 1px solid #eee; color: #555; vertical-align: middle; }
         tr:hover { background-color: #f8f9fa; }
 
-        .role-badge { padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .role-admin { background-color: #ffc107; color: #333; }
-        .role-user { background-color: #e2e6ea; color: #666; }
+        .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .role-admin { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .role-user { background-color: #e2e6ea; color: #495057; border: 1px solid #dae0e5; }
 
-        .btn-delete { background-color: white; color: #dc3545; border: 1px solid #dc3545; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold; transition: 0.3s; }
+        .btn-delete { background-color: white; color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: bold; transition: 0.2s; display: inline-block; }
         .btn-delete:hover { background-color: #dc3545; color: white; }
-        .btn-disabled { color: #ccc; border: 1px solid #eee; pointer-events: none; padding: 5px 10px; border-radius: 4px; font-size: 0.85rem; }
+
+        .btn-disabled { color: #adb5bd; border: 1px solid #e9ecef; background: #f8f9fa; cursor: not-allowed; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-block; }
+
+        /* --- MOBILE RESPONSIVE (Card View) --- */
+        @media (max-width: 900px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+
+            tr { margin-bottom: 20px; border: 1px solid #ddd; border-radius: 12px; background: white; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+            td {
+                border: none; border-bottom: 1px solid #eee; position: relative;
+                padding-left: 40%; text-align: right;
+                display: flex; justify-content: space-between; align-items: center;
+                word-break: break-all; /* Prevents long emails from breaking layout */
+            }
+
+            td:last-child { border-bottom: none; justify-content: flex-end; padding-top: 15px; }
+
+            td:before {
+                content: attr(data-label);
+                font-weight: 700; color: #333; text-transform: uppercase; font-size: 0.8rem;
+                position: absolute; left: 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <a href="/admin/dashboard" class="brand">⚡ ADMIN PANEL</a>
-    <div class="nav-links">
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/orders" class="active">Orders</a>
-        <a href="/admin/menu">Menu</a>
-        <a href="/admin/users">Users</a>
-        <a href="/admin/ratings">Ratings</a>
-        <a href="/admin/coupons">Coupons</a>
-        <a href="/admin/messages">Messages</a>
-        <a href="/logout" class="logout">Logout</a>
-    </div>
-</nav>
+<div th:replace="~{admin-navbar :: nav(activePage='users')}"></div>
 
 <div class="container">
     <h1>👤 Registered Users</h1>
+
     <table>
         <thead>
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
@@ -57,16 +71,27 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.id}">#</td>
-            <td style="font-weight:bold; color:#333;" th:text="${user.name}">Name</td>
-            <td th:text="${user.email}">Email</td>
-            <td>
+        <tr th:each="user, stat : ${users}">
+
+            <td data-label="#" th:text="${stat.count}">1</td>
+
+            <td data-label="Name" style="font-weight:bold; color:#333;" th:text="${user.name}">Name</td>
+
+            <td data-label="Email" th:text="${user.email}">Email</td>
+
+            <td data-label="Role">
                 <span th:text="${user.role}" th:class="'role-badge ' + (${user.role == 'ADMIN'} ? 'role-admin' : 'role-user')"></span>
             </td>
-            <td>
-                <span th:if="${user.role == 'ADMIN'}" class="btn-disabled">Protected 🛡️</span>
-                <a th:if="${user.role != 'ADMIN'}" th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="btn-delete" onclick="return confirm('Delete this user?');">Delete 🗑️</a>
+
+            <td data-label="Action">
+                <span th:if="${user.role == 'ADMIN'}" class="btn-disabled"><i class="fas fa-shield-alt"></i> Protected</span>
+
+                <a th:if="${user.role != 'ADMIN'}"
+                   th:href="@{/admin/users/delete/{id}(id=${user.email})}"
+                   class="btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this user?');">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
             </td>
         </tr>
         </tbody>

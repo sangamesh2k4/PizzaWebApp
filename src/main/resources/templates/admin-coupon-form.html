@@ -1,42 +1,88 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Add Coupon</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Coupon - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Shared Admin CSS */
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+
+        .form-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 500px;
+            border-top: 5px solid #e83e8c; /* Pink accent for coupons */
+        }
+
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 15px; font-family: 'Oswald', sans-serif; }
+
+        label { display: block; margin-top: 20px; font-weight: bold; color: #555; font-size: 0.9rem; }
+
+        input {
+            width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd;
+            border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 1rem;
+            transition: 0.3s;
+        }
+        input:focus { border-color: #e83e8c; outline: none; }
+
+        .form-hint { font-size: 0.8rem; color: #888; margin-top: 5px; }
+
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
+
+        .btn-save {
+            flex: 2; background: #28a745; color: white; border: none;
+            padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            font-size: 1rem; transition: 0.3s;
+        }
+        .btn-save:hover { background: #218838; transform: translateY(-2px); }
+
+        .btn-cancel {
+            flex: 1; background: #6c757d; color: white; text-decoration: none;
+            padding: 15px; border-radius: 8px; text-align: center; font-weight: bold;
+            font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-cancel:hover { background: #5a6268; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .form-card { padding: 25px; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5" style="max-width: 500px;">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Create New Coupon</h4>
-        </div>
-        <div class="card-body">
+<div th:replace="~{admin-navbar :: nav(activePage='coupons')}"></div>
 
-            <form th:action="@{/admin/coupons/save}" th:object="${coupon}" method="post">
+<div class="container">
+    <div class="form-card">
+        <h2>🎟️ Create New Coupon</h2>
 
-                <div class="mb-3">
-                    <label class="form-label">Coupon Code</label>
-                    <input type="text" th:field="*{code}" class="form-control"
-                           placeholder="e.g. WELCOME10" required>
-                    <div class="form-text">Customers will enter this code at checkout.</div>
-                </div>
+        <form th:action="@{/admin/coupons/save}" th:object="${coupon}" method="post">
 
-                <div class="mb-3">
-                    <label class="form-label">Discount Percentage (%)</label>
-                    <input type="number" th:field="*{discountPercent}" class="form-control"
-                           placeholder="e.g. 10" min="1" max="100" required>
-                </div>
+            <input type="hidden" th:field="*{id}">
 
-                <input type="hidden" th:field="*{id}">
+            <div>
+                <label>Coupon Code</label>
+                <input type="text" th:field="*{code}" placeholder="e.g. WELCOME10" style="text-transform: uppercase;" required>
+                <div class="form-hint">Customers will enter this code at checkout.</div>
+            </div>
 
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-success">Save Coupon</button>
-                    <a th:href="@{/admin/coupons}" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
+            <div>
+                <label>Discount Percentage (%)</label>
+                <input type="number" th:field="*{discountPercent}" placeholder="e.g. 10" min="1" max="100" required>
+            </div>
 
-        </div>
+            <div class="btn-group">
+                <a th:href="@{/admin/coupons}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Coupon</button>
+            </div>
+        </form>
     </div>
 </div>
 

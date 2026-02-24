@@ -33,9 +33,7 @@ public class CartController {
     @Autowired private SettingsRepository settingsRepo;
     @Autowired private CouponRepository couponRepository;
 
-    // ==========================================
-    // 1. VIEW CART (With Upselling & Store Status)
-    // ==========================================
+
     @GetMapping
     public String viewCart(Model model, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -64,9 +62,6 @@ public class CartController {
         return "cart";
     }
 
-    // ==========================================
-    // 2. ADD TO CART (FIXED: Supports Sizes & Notes)
-    // ==========================================
     @PostMapping("/add/{id}")
     public String addToCart(@PathVariable("id") String id,
                             @RequestParam(value = "selectedSize", required = false) String selectedSize,
@@ -114,9 +109,7 @@ public class CartController {
         return "redirect:" + (referer != null ? referer : "/");
     }
 
-    // ==========================================
-    // 3. INCREASE QUANTITY (FIXED: Full Page Reload)
-    // ==========================================
+
     @GetMapping("/increase/{id}")
     public String increaseQuantity(@PathVariable String id, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -134,9 +127,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // ==========================================
-    // 4. DECREASE QUANTITY (FIXED: Full Page Reload)
-    // ==========================================
+
     @GetMapping("/decrease/{id}")
     public String decreaseQuantity(@PathVariable String id, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -158,9 +149,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // ==========================================
-    // 5. REMOVE ITEM
-    // ==========================================
+
     @GetMapping("/remove/{id}")
     public String removeFromCart(@PathVariable String id, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -176,9 +165,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // ==========================================
-    // 6. APPLY COUPON
-    // ==========================================
+
     @PostMapping("/apply-coupon")
     public String applyCoupon(@RequestParam String code, HttpSession session, RedirectAttributes redirectAttributes) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -203,9 +190,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // ==========================================
-    // 7. CHECKOUT PAGE
-    // ==========================================
+
     @GetMapping("/checkout")
     public String checkout(HttpSession session, Model model, Principal principal) {
         StoreSettings settings = settingsRepo.findById("global_config").orElse(new StoreSettings());
@@ -224,9 +209,7 @@ public class CartController {
         return "checkout";
     }
 
-    // ==========================================
-    // 8. PROCESS PAYMENT (PHASE 1)
-    // ==========================================
+
     @PostMapping("/pay")
     public String processPayment(@RequestParam String name, @RequestParam String address,
                                  @RequestParam String phone, @RequestParam String paymentMethod,
@@ -248,9 +231,7 @@ public class CartController {
         }
     }
 
-    // ==========================================
-    // 9. FINALIZE ORDER (PHASE 2 - AFTER BANK)
-    // ==========================================
+
     @GetMapping("/pay-final")
     public String finalizeOrder(HttpSession session, Principal principal) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -300,9 +281,7 @@ public class CartController {
         return "redirect:/cart/success";
     }
 
-    // ==========================================
-    // 10. SHOW SUCCESS PAGE
-    // ==========================================
+
     @GetMapping("/success")
     public String showSuccessPage() {
         return "ordersuccess";

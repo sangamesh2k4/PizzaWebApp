@@ -2,72 +2,115 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Control Center - Edit Item</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        /* Shared Admin CSS */
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
 
-        /* Navbar is kept to maintain context, even on edit page */
-        nav { background: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .brand { font-size: 1.2rem; font-weight: bold; color: #ffc107; text-decoration: none; }
-        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 500; }
-        .nav-links a:hover { color: white; }
+        .edit-container { flex: 1; display: flex; justify-content: center; padding: 40px 20px; }
 
-        .edit-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; }
-        .edit-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; border-top: 5px solid #ffc107; }
+        .edit-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 600px;
+            border-top: 5px solid #ffc107;
+        }
 
-        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 15px; font-family: 'Oswald', sans-serif; }
 
-        .btn-group { margin-top: 25px; display: flex; gap: 15px; }
-        .btn-save { flex: 1; background: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-cancel { flex: 1; background: #6c757d; color: white; text-decoration: none; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; }
-        .btn-save:hover { background: #218838; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; font-size: 0.9rem; }
+
+        input, select, textarea {
+            width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc;
+            border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 1rem;
+        }
+        input:focus, select:focus { border-color: #ffc107; outline: none; }
+
+        /* Pricing Section */
+        .pricing-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #eee; }
+        .pricing-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .pricing-row:last-child { margin-bottom: 0; }
+
+        /* Buttons */
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
+
+        .btn-save {
+            flex: 2; background: #28a745; color: white; border: none;
+            padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            font-size: 1rem; transition: 0.3s;
+        }
+        .btn-save:hover { background: #218838; transform: translateY(-2px); }
+
+        .btn-cancel {
+            flex: 1; background: #6c757d; color: white; text-decoration: none;
+            padding: 15px; border-radius: 8px; text-align: center; font-weight: bold;
+            font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-cancel:hover { background: #5a6268; }
+
+        @media (max-width: 600px) {
+            .edit-card { padding: 20px; }
+            .btn-group { flex-direction: column; }
+            .pricing-row { flex-direction: column; gap: 5px; margin-bottom: 15px; border-bottom:1px solid #ddd; padding-bottom:10px; }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <a href="/admin/dashboard" class="brand">🕹️ PIZZA CORNER CONTROL CENTER</a>
-    <div class="nav-links">
-        <a href="/admin/menu">Back to Menu</a>
-    </div>
-</nav>
+<div th:replace="~{admin-navbar :: nav(activePage='menu')}"></div>
 
 <div class="edit-container">
     <div class="edit-card">
         <h2>✏️ Edit Item Details</h2>
-        <form th:action="@{/admin/menu/add}" method="post" class="add-form">
 
-            <h3>Add New Item</h3>
+        <form th:action="@{/admin/menu/add}" th:object="${pizza}" method="post">
 
-            <input type="text" name="name" placeholder="Item Name (e.g. Pepperoni)" required>
-            <input type="text" name="description" placeholder="Description">
-            <input type="text" name="imageUrl" placeholder="Image URL">
+            <input type="hidden" th:field="*{id}">
 
-            <select name="category">
+            <label>Item Name</label>
+            <input type="text" th:field="*{name}" required>
+
+            <label>Description</label>
+            <input type="text" th:field="*{description}">
+
+            <label>Image URL</label>
+            <input type="text" th:field="*{imageUrl}">
+
+            <label>Category</label>
+            <select th:field="*{category}">
                 <option value="Pizza">Pizza</option>
-                <option value="Sides">Sides</option>
-                <option value="Drinks">Drinks</option>
+                <option value="Side">Side</option>
+                <option value="Drink">Drink</option>
             </select>
 
-            <label>Pricing Options:</label>
-            <div class="pricing-row">
-                <input type="text" name="sizeNames" placeholder="Size (e.g. Small)" required>
-                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)" required>
+            <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="isVeg" id="vegCheck" style="width: auto; height: 20px; width: 20px;"
+                       th:checked="${pizza.veg}">
+                <label for="vegCheck" style="margin: 0; color: #28a745; cursor:pointer;">Is Vegetarian? 🌱</label>
             </div>
 
-            <div class="pricing-row">
-                <input type="text" name="sizeNames" placeholder="Size (e.g. Medium)">
-                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)">
+            <label>Pricing Options (Size & Price)</label>
+            <div class="pricing-section">
+                <p style="font-size:0.8rem; color:#666; margin-top:0;">Modify existing prices or add new sizes below.</p>
+
+                <div class="pricing-row" th:each="entry : *{sizes}">
+                    <input type="text" name="sizeNames" th:value="${entry.key}" placeholder="Size Name" required>
+                    <input type="number" step="0.01" name="sizeValues" th:value="${entry.value}" placeholder="Price (₹)" required>
+                </div>
+
+                <div class="pricing-row">
+                    <input type="text" name="sizeNames" placeholder="Add New Size (e.g. XL)">
+                    <input type="number" step="0.01" name="sizeValues" placeholder="Price (₹)">
+                </div>
             </div>
 
-            <div class="pricing-row">
-                <input type="text" name="sizeNames" placeholder="Size (e.g. Large)">
-                <input type="number" step="0.5" name="sizeValues" placeholder="Price (₹)">
+            <div class="btn-group">
+                <a href="/admin/menu" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save">Save Changes</button>
             </div>
-
-            <button type="submit">Add Item</button>
         </form>
     </div>
 </div>
