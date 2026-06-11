@@ -46,12 +46,7 @@ public class AdminDataLoader implements CommandLineRunner {
             admin.setEnabled(true);
             userRepository.save(admin);
 
-            System.out.println("-------------------------------------------");
-            System.out.println("✅ DEFAULT ADMIN CREATED");
-            System.out.println("Email: " + targetEmail);
-            System.out.println("Password: admin123");
-            System.out.println("-------------------------------------------");
-        }
+          }
 
         // --- 2. Create Categories ---
         if (categoryRepository.count() == 0) {
@@ -61,7 +56,7 @@ public class AdminDataLoader implements CommandLineRunner {
                     new Category("Drink")
             );
             categoryRepository.saveAll(categories);
-            System.out.println("📂 Categories added to MongoDB.");
+
         }
 
         // --- 3. Create Menu Items ---
@@ -612,8 +607,6 @@ public class AdminDataLoader implements CommandLineRunner {
             );
 
             // 🟢 CORRECTED: Use pizzaRepository
-            pizzaRepository.saveAll(allMenuItems);
-            System.out.println("✅ All Menu Items (Pizzas, Sides, Drinks) saved to MongoDB!");
-        }
+            pizzaRepository.saveAll(allMenuItems);}
     }
 }

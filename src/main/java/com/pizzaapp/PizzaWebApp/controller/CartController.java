@@ -1,23 +1,19 @@
 package com.pizzaapp.PizzaWebApp.controller;
 
-import com.pizzaapp.PizzaWebApp.entity.Coupon;
-import com.pizzaapp.PizzaWebApp.entity.MenuItem;
-import com.pizzaapp.PizzaWebApp.entity.Order;
-import com.pizzaapp.PizzaWebApp.entity.StoreSettings;
+import com.pizzaapp.PizzaWebApp.entity.*;
 import com.pizzaapp.PizzaWebApp.model.Cart;
 import com.pizzaapp.PizzaWebApp.model.CartItem;
-import com.pizzaapp.PizzaWebApp.repository.CouponRepository;
-import com.pizzaapp.PizzaWebApp.repository.MenuItemRepository;
-import com.pizzaapp.PizzaWebApp.repository.OrderRepository;
-import com.pizzaapp.PizzaWebApp.repository.SettingsRepository;
+import com.pizzaapp.PizzaWebApp.repository.*;
+import com.pizzaapp.PizzaWebApp.service.CartService;
 import com.pizzaapp.PizzaWebApp.service.EmailService;
+import com.pizzaapp.PizzaWebApp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.*;
@@ -32,15 +28,16 @@ public class CartController {
     @Autowired private EmailService emailService;
     @Autowired private SettingsRepository settingsRepo;
     @Autowired private CouponRepository couponRepository;
+    @Autowired private CartService cartService;
+    @Autowired private UserService userService;
+    @Autowired private PendingOrderRepository pendingOrderRepository;
 
 
     @GetMapping
-    public String viewCart(Model model, HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new Cart();
-            session.setAttribute("cart", cart);
-        }
+    public String viewCart(Model model, Principal principal) {
+        String email = principal.getName();
+
+        Cart cart = cartService.getCart(email);
 
         // Add Cart Data
         model.addAttribute("cartItems", cart.getItems());
@@ -66,12 +63,12 @@ public class CartController {
     public String addToCart(@PathVariable("id") String id,
                             @RequestParam(value = "selectedSize", required = false) String selectedSize,
                             @RequestParam(value = "note", defaultValue = "") String note,
-                            HttpSession session,
-                            HttpServletRequest request) {
+                            HttpServletRequest request, Principal principal) {
 
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) cart = new Cart();
+        String email = principal.getName();
 
+        Cart cart =
+                cartService.getCart(email);
         MenuItem dbItem = menuItemRepository.findById(id).orElse(null);
 
         if (dbItem != null) {
@@ -102,7 +99,11 @@ public class CartController {
             cart.addCartItem(new CartItem(cartEntry, 1));
         }
 
-        session.setAttribute("cart", cart);
+        //session.setAttribute("cart", cart);
+        cartService.saveCart(
+                email,
+                cart
+        );
 
         // Smart Redirect
         String referer = request.getHeader("Referer");
@@ -111,8 +112,9 @@ public class CartController {
 
 
     @GetMapping("/increase/{id}")
-    public String increaseQuantity(@PathVariable String id, HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
+    public String increaseQuantity(@PathVariable String id,Principal principal) {
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
         if (cart != null) {
             for (CartItem item : cart.getItems()) {
                 if (item.getMenuItem().getId().equals(id)) {
@@ -121,7 +123,7 @@ public class CartController {
                 }
             }
             updateCartDiscount(cart);
-            session.setAttribute("cart", cart);
+            cartService.saveCart(email,cart);
         }
         // 🟢 FIX: Redirect back to the main cart page
         return "redirect:/cart";
@@ -129,8 +131,9 @@ public class CartController {
 
 
     @GetMapping("/decrease/{id}")
-    public String decreaseQuantity(@PathVariable String id, HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
+    public String decreaseQuantity(@PathVariable String id, Principal principal) {
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
         if (cart != null) {
             cart.getItems().removeIf(item -> {
                 if (item.getMenuItem().getId().equals(id)) {
@@ -143,7 +146,7 @@ public class CartController {
                 return false;
             });
             updateCartDiscount(cart);
-            session.setAttribute("cart", cart);
+            cartService.saveCart(email,cart);
         }
         // 🟢 FIX: Redirect back to the main cart page
         return "redirect:/cart";
@@ -151,8 +154,9 @@ public class CartController {
 
 
     @GetMapping("/remove/{id}")
-    public String removeFromCart(@PathVariable String id, HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
+    public String removeFromCart(@PathVariable String id, Principal principal) {
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
         if (cart != null) {
             cart.removeItem(id);
             // Reset coupon if cart is empty
@@ -160,44 +164,41 @@ public class CartController {
                 cart.setDiscountAmount(0.0);
                 cart.setAppliedCouponCode(null);
             }
-            session.setAttribute("cart", cart);
+            cartService.saveCart(email,cart);
         }
         return "redirect:/cart";
     }
 
-
+    //apply cuopon
     @PostMapping("/apply-coupon")
-    public String applyCoupon(@RequestParam String code, HttpSession session, RedirectAttributes redirectAttributes) {
-        Cart cart = (Cart) session.getAttribute("cart");
-
-        if (cart != null) {
-            String cleanCode = code.trim().toUpperCase();
-            Coupon coupon = couponRepository.findByCode(cleanCode).orElse(null);
-
-            if (coupon != null && coupon.isActive()) {
-                double total = cart.getTotalPrice();
-                double discount = total * (coupon.getDiscountPercent() / 100.0);
-                cart.setDiscountAmount(discount);
-                cart.setAppliedCouponCode(cleanCode);
-                redirectAttributes.addFlashAttribute("successMsg", "Coupon '" + cleanCode + "' Applied! " + coupon.getDiscountPercent() + "% OFF");
-            } else {
-                cart.setDiscountAmount(0.0);
-                cart.setAppliedCouponCode(null);
-                redirectAttributes.addFlashAttribute("errorMsg", "Invalid or Expired Coupon");
-            }
-            session.setAttribute("cart", cart);
+    public String applyCoupon(@RequestParam String code, Principal principal) {
+        String email = principal.getName();
+        Cart cart = cartService.getCart(email);
+        String cleanCode = code.trim().toUpperCase();
+        Coupon coupon = couponRepository.findByCode(cleanCode).orElse(null);
+        if(coupon != null && coupon.isActive()){
+            double total = cart.getTotalPrice();
+            double discount = total * (coupon.getDiscountPercent()/100.0);
+            cart.setDiscountAmount(discount);
+            cart.setAppliedCouponCode(cleanCode);
+            cartService.saveCart(email, cart);
+            return "redirect:/cart?coupon=success";
         }
-        return "redirect:/cart";
+        cart.setDiscountAmount(0.0);
+        cart.setAppliedCouponCode(null);
+        cartService.saveCart(email, cart);
+        return "redirect:/cart?coupon=invalid";
     }
 
 
     @GetMapping("/checkout")
-    public String checkout(HttpSession session, Model model, Principal principal) {
+    public String checkout( Model model, Principal principal) {
         StoreSettings settings = settingsRepo.findById("global_config").orElse(new StoreSettings());
         if (!settings.isStoreOpen()) return "redirect:/cart?error=StoreIsClosed";
         if (principal == null) return "redirect:/login";
 
-        Cart cart = (Cart) session.getAttribute("cart");
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
         if (cart == null || cart.getItems().isEmpty()) return "redirect:/menu";
 
         model.addAttribute("email", principal.getName());
@@ -212,17 +213,22 @@ public class CartController {
 
     @PostMapping("/pay")
     public String processPayment(@RequestParam String name, @RequestParam String address,
-                                 @RequestParam String phone, @RequestParam String paymentMethod,
-                                 HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) return "redirect:/menu";
+                                 @RequestParam String phone, @RequestParam String paymentMethod,Principal principal) {
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
+        if (cart.getItems().isEmpty()) return "redirect:/menu";
 
         double grandTotal = cart.getGrandTotal() * 1.05; // Including Service Charge
 
         // Save Temp Data
-        session.setAttribute("temp_customer_name", name);
-        session.setAttribute("temp_address", address + " | Phone: " + phone);
-        session.setAttribute("temp_grand_total", grandTotal);
+        PendingOrder pending = pendingOrderRepository.findByUserEmail(email).orElse(new PendingOrder());
+
+        pending.setUserEmail(email);
+        pending.setCustomerName(name);
+        pending.setAddress(address + " | Phone: " + phone);
+        pending.setGrandTotal(grandTotal);
+
+        pendingOrderRepository.save(pending);
 
         if ("UPI".equals(paymentMethod)) {
             return "redirect:/payment?amount=" + grandTotal + "&method=upi";
@@ -233,13 +239,22 @@ public class CartController {
 
 
     @GetMapping("/pay-final")
-    public String finalizeOrder(HttpSession session, Principal principal) {
-        Cart cart = (Cart) session.getAttribute("cart");
-        String name = (String) session.getAttribute("temp_customer_name");
-        String address = (String) session.getAttribute("temp_address");
-        Double grandTotal = (Double) session.getAttribute("temp_grand_total");
+    public String finalizeOrder(Principal principal) {
+        String email=principal.getName();
+        Cart cart = cartService.getCart(email);
+        PendingOrder pendingOrder = pendingOrderRepository.findByUserEmail(email).orElse(null);
 
-        if (cart == null || name == null) return "redirect:/menu";
+        if(pendingOrder == null){
+            return "redirect:/menu";
+        }
+
+        String name = pendingOrder.getCustomerName();
+
+        String address = pendingOrder.getAddress();
+
+        Double grandTotal = pendingOrder.getGrandTotal();
+
+        if (cart.getItems().isEmpty()) return "redirect:/menu";
 
         Order order = new Order();
         order.setCustomerName(name);
@@ -272,18 +287,26 @@ public class CartController {
             } catch (Exception e) { e.printStackTrace(); }
         }).start();
 
-        // Clear Session
-        session.removeAttribute("cart");
-        session.removeAttribute("temp_customer_name");
-        session.removeAttribute("temp_address");
-        session.removeAttribute("temp_grand_total");
+        // Clear cart
+        cart.clear();
+        cartService.saveCart(email, cart);
+        pendingOrderRepository.delete(pendingOrder);
 
         return "redirect:/cart/success";
     }
 
 
     @GetMapping("/success")
-    public String showSuccessPage() {
+    public String showSuccessPage(Model model) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userService.findByEmailUser(email);
+
+        model.addAttribute("userName", user.getName());
         return "ordersuccess";
     }
 
@@ -327,4 +350,5 @@ public class CartController {
 
         return basePrice + increment;
     }
+
 }

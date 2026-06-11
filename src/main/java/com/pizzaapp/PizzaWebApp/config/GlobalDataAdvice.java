@@ -13,6 +13,8 @@ public class GlobalDataAdvice {
     @Autowired
     private SettingsRepository settingsRepo;
 
+
+
     @ModelAttribute
     public void addStoreStatus(Model model) {
         StoreSettings settings = settingsRepo.findById("global_config").orElse(new StoreSettings());

@@ -1,6 +1,10 @@
 package com.pizzaapp.PizzaWebApp.entity;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,12 +17,18 @@ public class User {
 
     //private String id;
 
+    @NotBlank(message = "Name is required")
     private String name;
 
     @Indexed(unique = true)
     @Id
+    @Email(message = "Invalid email format")
     private String email;
 
+   @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d).{8,}$",
+            message = "Password must be at least 8 characters and contain a number"
+    )
     private String password;
     private String role;
     private boolean enabled;

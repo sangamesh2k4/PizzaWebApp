@@ -1,8 +1,12 @@
 package com.pizzaapp.PizzaWebApp;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Encoders;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import javax.crypto.SecretKey;
 
 @SpringBootApplication
 public class PizzaWebAppApplication {
@@ -14,6 +18,5 @@ public class PizzaWebAppApplication {
 
         SpringApplication.run(PizzaWebAppApplication.class, args);
         System.out.println("sangu bhai");
-        System.out.println("DEBUG: Testing URI Load -> " + System.getProperty("MONGODB_URI"));
     }
 }

@@ -63,14 +63,33 @@
         <a th:href="@{/orders}" th:classappend="${activePage == 'orders'} ? 'active'">Orders</a>
         <a th:href="@{/contact}" th:classappend="${activePage == 'contact'} ? 'active'">Contact</a>
         <a th:href="@{/about}" th:classappend="${activePage == 'about'} ? 'active'">about</a>
-        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+        <a href="#" onclick="logout()" class="logout-btn">Logout</a>
     </div>
 
     <script>
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');
         }
+async function logout(){
+
+    const response = await fetch(
+        "/api/auth/logout",
+        {
+            method: "POST"
+        }
+    );
+
+    if(response.ok){
+
+        window.location.href="/login";
+
+    } else {
+
+        alert("Logout failed");
+    }
+}
     </script>
+
 </nav>
 
 </body>

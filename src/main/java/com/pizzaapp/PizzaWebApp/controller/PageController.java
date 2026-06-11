@@ -52,7 +52,6 @@ public class PageController {
         model.addAttribute("currentPage",page);
         model.addAttribute("totalPages",pizzaPage.getTotalPages());
        // List<Pizza> pizzas = pizzaService.getAllPizzas();
-        //System.out.println("Home pizzas count = " + pizzas.size());
 
         //model.addAttribute("pizzas", pizzas);
         return "home";

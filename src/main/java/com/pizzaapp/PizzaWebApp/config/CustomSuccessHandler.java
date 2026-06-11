@@ -13,22 +13,26 @@ import java.util.Set;
 
 
 @Component
-public class CustomSuccessHandler implements AuthenticationSuccessHandler {
-
+public class CustomSuccessHandler
+        implements AuthenticationSuccessHandler {
 
     @Override
-    public  void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
-        Set<String> roles= AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication)
+            throws IOException {
 
-        System.out.println("DEBUG - Logged in user roles: " + roles);
+        boolean isAdmin =
+                authentication.getAuthorities()
+                        .stream()
+                        .anyMatch(a ->
+                                a.getAuthority().equals("ADMIN"));
 
-         if(roles.contains("ADMIN")){
-             response.sendRedirect("/admin/dashboard");
-         }
-         else{
-             response.sendRedirect("/home");
-         }
+        if (isAdmin) {
+            response.sendRedirect("/admin/dashboard");
+        } else {
+            response.sendRedirect("/home");
+        }
     }
-
-
 }

@@ -82,8 +82,6 @@ public class EmailService {
             helper.setText(htmlContent, true);
             mailSender.send(message);
         } catch (MessagingException e) {
-            // Log the error for your internship debugging
-            System.err.println("Error sending status update: " + e.getMessage());
         }
     }
 

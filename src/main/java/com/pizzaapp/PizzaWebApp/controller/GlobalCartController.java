@@ -1,35 +1,31 @@
 package com.pizzaapp.PizzaWebApp.controller;
 
-import jakarta.servlet.http.HttpSession;
+import com.pizzaapp.PizzaWebApp.service.CartService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import com.pizzaapp.PizzaWebApp.model.Cart;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalCartController {
+    @Autowired private final CartService cartService;
 
     @ModelAttribute
-    public void globalAttributes(HttpSession session, Model model) {
-        // 1. Get the raw object from session
-        Object sessionObj = session.getAttribute("cart");
-
-        Cart cart = null;
-
-        // 2. SAFETY CHECK: Is this actually a Cart object?
-        if (sessionObj instanceof Cart) {
-            // Yes, it's safe to cast
-            cart = (Cart) sessionObj;
-        } else {
-            // No, it's either null OR the old broken ArrayList.
-            // Create a fresh new Cart to prevent the crash.
-            cart = new Cart();
-
-            // Overwrite the bad data in the session immediately
-            session.setAttribute("cart", cart);
+    public void globalAttributes( Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth== null|| !auth.isAuthenticated()|| "anonymousUser".equals(auth.getPrincipal())){
+            model.addAttribute("cart",new Cart());
+            return;
         }
+        String email= auth.getName();
+        Cart cart=cartService.getCart(email);
+        model.addAttribute("cart",cart);
 
-        // 3. Add to model so HTML can use it
-        model.addAttribute("cart", cart);
     }
 }

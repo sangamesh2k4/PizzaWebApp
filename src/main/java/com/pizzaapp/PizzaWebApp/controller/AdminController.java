@@ -3,10 +3,11 @@ package com.pizzaapp.PizzaWebApp.controller;
 import com.pizzaapp.PizzaWebApp.entity.*;
 import com.pizzaapp.PizzaWebApp.repository.*;
 import com.pizzaapp.PizzaWebApp.service.EmailService;
-import jakarta.servlet.http.HttpSession;
 import org.apache.catalina.mbeans.SparseUserDatabaseMBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,13 @@ public class AdminController {
     // 1. DASHBOARD HOME (Stats & Overview)
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
+
+        Authentication auth =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+
         // Calculate Stats
         long totalUsers = userRepository.count();
         long totalItems = menuItemRepository.count();

@@ -43,8 +43,7 @@
         .coupon-box { display: flex; gap: 10px; margin: 25px 0; }
         .coupon-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: 'Poppins', sans-serif; outline: none; }
         .apply-btn { background: var(--brand-dark); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: 700; }
-        .checkout-btn { display: block; width: 100%; background: var(--brand-tomato); color: white; text-align: center; padding: 18px; border-radius: 15px; font-weight: 700; text-decoration: none; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 10px 20px rgba(192, 57, 43, 0.2); }
-        .checkout-btn:hover { transform: translateY(-3px); background: #a93226; }
+        .checkout-btn { display: block; width: 100%; box-sizing: border-box; background: var(--brand-tomato); color: white; text-align: center; padding: 18px; border-radius: 15px; font-weight: 700; text-decoration: none; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 10px 20px rgba(192, 57, 43, 0.2); }
         .empty-cart { text-align: center; padding: 60px 20px; }
         .empty-icon { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
 
@@ -54,6 +53,121 @@
             .summary-section { position: static; }
             .cart-item { flex-wrap: wrap; }
             .item-price { margin-left: auto; }
+        }
+
+        /* --- FOOTER STYLES --- */
+        .main-footer {
+            background-color: #2C3E50; /* Brand Dark */
+            color: white;
+            padding: 60px 5% 100px; /* Extra bottom padding so floating cart doesn't cover text */
+            margin-top: auto;
+            font-family: 'Poppins', sans-serif;
+            border-top: 5px solid #C0392B; /* Brand Tomato Accent */
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            color: #C0392B; /* Brand Tomato */
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .footer-col h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ecf0f1;
+        }
+
+        .footer-links a {
+            display: block;
+            color: #bdc3c7;
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: #C0392B;
+            padding-left: 5px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: #C0392B;
+            transform: translateY(-3px);
+        }
+
+        /* --- FLOATING CART BAR STYLES (If needed later) --- */
+        .cart-floating-bar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #2E7D32; /* Action Green */
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.4);
+            z-index: 9999;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .cart-info { display: flex; align-items: center; gap: 10px; }
+        .count-box { font-weight: 500; font-size: 0.9rem; letter-spacing: 1px; }
+        .divider { opacity: 0.5; }
+        .total-price { font-weight: 700; font-size: 1.1rem; }
+
+        .view-cart-link {
+            background: white;
+            color: #2E7D32;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: transform 0.2s;
+        }
+
+        .view-cart-link:hover { transform: scale(1.05); }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
     </style>
 </head>
@@ -97,8 +211,16 @@
             <div class="summary-row" th:if="${discount > 0}"><span>Coupon (<span th:text="${couponCode}"></span>)</span><span style="color:var(--action-green); font-weight:700;" th:text="'-₹' + ${discount}">-₹0</span></div>
             <div class="summary-row total"><span>Total Amount</span><span th:text="'₹' + ${finalTotal}">₹0</span></div>
 
-            <div th:if="${successMsg}" style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:8px; margin: 15px 0; font-size: 0.85rem;"><i class="fas fa-check-circle"></i> <span th:text="${successMsg}"></span></div>
-            <div th:if="${errorMsg}" style="background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin: 15px 0; font-size: 0.85rem;"><i class="fas fa-exclamation-circle"></i> <span th:text="${errorMsg}"></span></div>
+            <div th:if="${param.coupon != null and param.coupon[0] == 'success'}"
+                 style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:8px; margin:15px 0; font-size:0.85rem;">
+                <i class="fas fa-check-circle"></i>
+                Coupon Applied Successfully!
+            </div>
+            <div th:if="${param.coupon != null and param.coupon[0] == 'invalid'}"
+                 style="background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin:15px 0; font-size:0.85rem;">
+                <i class="fas fa-exclamation-circle"></i>
+                Invalid or Expired Coupon
+            </div>
 
             <form th:action="@{/cart/apply-coupon}" method="post" class="coupon-box">
                 <input type="text" name="code" class="coupon-input" placeholder="Coupon Code" th:value="${couponCode}">
@@ -111,6 +233,37 @@
         </div>
     </div>
 </div>
+
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-col">
+            <div class="footer-logo">🍕 SANGAMESH'S PIZZA</div>
+            <p>The best handcrafted pizza in town, delivered hot and fresh to your doorstep.</p>
+        </div>
+
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <div class="footer-links">
+                <a th:href="@{/home}">Home</a>
+                <a th:href="@{/menu}">Full Menu</a>
+                <a th:href="@{/orders}">My Orders</a>
+                <a th:href="@{/contact}">Contact Us</a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h3>Connect With Us</h3>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p style="margin-top:10px; font-size:0.8rem; opacity:0.7;">
+                &copy; 2026 Sangamesh's Pizza Corner.<br>All Rights Reserved.
+            </p>
+        </div>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script th:inline="javascript">

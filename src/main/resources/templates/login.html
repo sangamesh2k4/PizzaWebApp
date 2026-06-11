@@ -160,33 +160,96 @@
             <strong><i class="fas fa-exclamation-triangle"></i> Login Failed</strong>
             Invalid credentials. Please try again.
         </div>
+        <form id="loginForm">
 
-        <form action="/login" method="post">
             <label>Email Address</label>
             <div class="input-group">
                 <i class="fas fa-envelope"></i>
-                <input type="email" name="email" placeholder="john@example.com" required>
+                <input id="email"
+                       type="email"
+                       placeholder="john@example.com"
+                       required>
             </div>
 
             <label>Password</label>
             <div class="input-group">
                 <i class="fas fa-lock"></i>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <input id="password"
+                       type="password"
+                       placeholder="••••••••"
+                       required>
             </div>
 
-            <button type="submit">Log In</button>
+            <button type="submit">
+                Log In
+            </button>
+
         </form>
-
         <p class="register-link">Don't have an account? <a href="/register">Create one now</a></p>
-    </div>
-</div>
 
+</div>
+</div>
 <div class="visual-section">
     <div class="glass-card">
         <h3>Hot & Cheesy 🧀</h3>
         <p>Get your favorite pizzas delivered straight from our oven to your door. Freshness guaranteed!</p>
     </div>
 </div>
+<script>
+    document.getElementById("loginForm")
+        .addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+        const email =
+            document.getElementById("email").value;
+
+        const password =
+            document.getElementById("password").value;
+
+        try {
+
+            const response = await fetch(
+                "/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            console.log("STATUS:", response.status);
+
+            const redirectUrl = await response.text();
+
+if (response.ok) {
+
+    console.log("LOGIN SUCCESS");
+
+    alert("Login Success");
+
+    window.location.href = redirectUrl;
+
+} else {
+
+                console.log("LOGIN FAILED");
+
+                alert("Invalid credentials");
+            }
+
+        } catch(error) {
+
+            console.error("ERROR:", error);
+
+            alert("Something went wrong");
+        }
+    });
+</script>
 
 </body>
 </html>

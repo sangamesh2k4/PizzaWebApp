@@ -22,7 +22,6 @@ public class PizzaController {
     public String getAllPizzas(Model model) {
 
         List<MenuItem> menuItems = pizzaService.getAllPizzas();
-        System.out.println("Pizzas count = " + menuItems.size());
         model.addAttribute("pizzas", menuItems);
         model.addAttribute("pizza", new MenuItem());
 

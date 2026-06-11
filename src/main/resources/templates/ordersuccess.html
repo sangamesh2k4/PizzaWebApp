@@ -24,8 +24,8 @@
 <div class="success-card">
     <span class="check-icon">✅</span>
     <h1>Order Confirmed!</h1>
-    <p>Thank you, <strong>Sangu</strong>! Your order has been sent to the kitchen and is being prepared with love.</p>
-    <a th:href="@{/orders}" class="btn">Track Your Order</a>
+    <p>Thank you ,<strong th:text="${userName}">Customer</strong>! Your order has been sent to the kitchen and is being prepared with love.
+    </p>    <a th:href="@{/orders}" class="btn">Track Your Order</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>

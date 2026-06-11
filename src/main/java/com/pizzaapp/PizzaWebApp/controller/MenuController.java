@@ -2,7 +2,6 @@ package com.pizzaapp.PizzaWebApp.controller;
 
 import com.pizzaapp.PizzaWebApp.entity.MenuItem;
 import com.pizzaapp.PizzaWebApp.repository.MenuItemRepository;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +23,7 @@ public class MenuController {
     public String menu(Model model,
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(required = false) String keyword,
-                       @RequestParam(required = false) String category,
-                       HttpSession session) {
+                       @RequestParam(required = false) String category) {
 
         Pageable pageable = PageRequest.of(page, 15);
         Page<MenuItem> pizzaPage;
@@ -49,9 +47,6 @@ public class MenuController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pizzaPage.getTotalPages());
 
-        if (session.getAttribute("favorites") == null) {
-            session.setAttribute("favorites", new HashSet<String>());
-        }
 
         return "menu";
     }
