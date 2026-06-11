@@ -227,26 +227,22 @@
 
             const redirectUrl = await response.text();
 
-if (response.ok) {
+            if (response.ok) {
 
-    console.log("LOGIN SUCCESS");
+                console.log("LOGIN SUCCESS");
 
-    alert("Login Success");
+                window.location.href = redirectUrl;
 
-    window.location.href = redirectUrl;
-
-} else {
+            } else {
 
                 console.log("LOGIN FAILED");
 
-                alert("Invalid credentials");
             }
 
         } catch(error) {
 
             console.error("ERROR:", error);
 
-            alert("Something went wrong");
         }
     });
 </script>
