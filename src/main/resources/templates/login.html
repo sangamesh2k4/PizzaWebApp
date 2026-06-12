@@ -201,14 +201,10 @@
 
         e.preventDefault();
 
-        const email =
-            document.getElementById("email").value;
-
-        const password =
-            document.getElementById("password").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
         try {
-
             const response = await fetch(
                 "/api/auth/login",
                 {
@@ -225,26 +221,31 @@
 
             console.log("STATUS:", response.status);
 
-            const redirectUrl = await response.text();
+            // Read the text response from the server
+            const responseText = await response.text();
 
             if (response.ok) {
-
                 console.log("LOGIN SUCCESS");
-
-                window.location.href = redirectUrl;
-
+                // Redirect to the dashboard/home based on API response
+                window.location.href = responseText;
             } else {
-
                 console.log("LOGIN FAILED");
+                                const errorType = responseText.trim();
 
+                if (errorType === 'email' || errorType === 'password') {
+                    window.location.href = "/login?error=" + errorType;
+                } else {
+                    window.location.href = "/login?error=true";
+                }
             }
 
         } catch(error) {
-
             console.error("ERROR:", error);
 
+            window.location.href = "/login?error=true";
         }
     });
+
 </script>
 
 </body>

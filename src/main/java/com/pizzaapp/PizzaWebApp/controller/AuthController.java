@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.pizzaapp.PizzaWebApp.entity.User;
 import com.pizzaapp.PizzaWebApp.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class AuthController {
@@ -39,6 +40,7 @@ import com.pizzaapp.PizzaWebApp.repository.RefreshTokenRepository;
 import com.pizzaapp.PizzaWebApp.service.CustomUserDetailsService;
 import com.pizzaapp.PizzaWebApp.service.JwtService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.pizzaapp.PizzaWebApp.service.RefreshTokenService;
 import com.pizzaapp.PizzaWebApp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,7 +89,7 @@ public class AuthController {
     @Operation(summary = "Login user and generate JWT tokens")
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody AuthenticationRequest request , HttpServletResponse response){
+            @RequestBody AuthenticationRequest request , HttpServletResponse response,HttpServletRequest httpRequest){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -126,7 +128,6 @@ public class AuthController {
                         .stream()
                         .anyMatch(a ->
                                 a.getAuthority().equals("ADMIN"));
-
         return ResponseEntity.ok(
                 isAdmin
                         ? "/admin/dashboard"

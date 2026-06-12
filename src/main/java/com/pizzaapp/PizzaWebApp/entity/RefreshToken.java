@@ -3,6 +3,7 @@ package com.pizzaapp.PizzaWebApp.entity;
 import lombok.*;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -19,6 +20,7 @@ public class RefreshToken {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String token;
 
     private Instant expiryDate;

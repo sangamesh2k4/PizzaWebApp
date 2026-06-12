@@ -70,24 +70,23 @@
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');
         }
-async function logout(){
 
-    const response = await fetch(
-        "/api/auth/logout",
-        {
-            method: "POST"
+        async function logout(){
+            try {
+                const response = await fetch("/api/auth/logout", {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+                    window.location.href = "/login";
+                } else {
+                    // Fails silently for the user, but logs to the console for the developer
+                    console.error("Logout failed with status:", response.status);
+                }
+            } catch (error) {
+                console.error("Network error during logout:", error);
+            }
         }
-    );
-
-    if(response.ok){
-
-        window.location.href="/login";
-
-    } else {
-
-        alert("Logout failed");
-    }
-}
     </script>
 
 </nav>
