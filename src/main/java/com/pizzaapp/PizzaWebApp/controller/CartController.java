@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -178,7 +180,7 @@ public class CartController {
         Coupon coupon = couponRepository.findByCode(cleanCode).orElse(null);
         if(coupon != null && coupon.isActive()){
             double total = cart.getTotalPrice();
-            double discount = total * (coupon.getDiscountPercent()/100.0);
+            double discount = BigDecimal.valueOf(total * (coupon.getDiscountPercent() / 100.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
             cart.setDiscountAmount(discount);
             cart.setAppliedCouponCode(cleanCode);
             cartService.saveCart(email, cart);
