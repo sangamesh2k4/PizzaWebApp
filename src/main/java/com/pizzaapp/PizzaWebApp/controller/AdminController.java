@@ -190,9 +190,7 @@ public class AdminController {
     // 5. CONTACT MESSAGES (New)
     @GetMapping("/messages")
     public String messageManager(Model model) {
-        // 1. Fetch all messages/reviews from MongoDB
         List<ContactMessage> messages = contactRepository.findAll();
-        // 2. Sort them by date in Java if not using a custom query
 
         messages.sort((m1, m2) -> m2.getDate().compareTo(m1.getDate()));
         // 3. Add to model for the view

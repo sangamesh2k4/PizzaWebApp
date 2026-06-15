@@ -23,9 +23,6 @@ public class ContactMessage {
     private Date date = new Date();
         // Auto-set the date
 
-    public void setMessage(String message) {
-    }
-
     public Date getDate() {
         return date;
     }

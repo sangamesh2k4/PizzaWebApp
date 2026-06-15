@@ -23,9 +23,6 @@
             transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
 
-        /* Unread State */
-        .msg-card.unread { border-left-color: #ffc107; background: #fffcf5; }
-
         .msg-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
         .msg-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: flex-start; }
@@ -39,12 +36,6 @@
 
         /* Action Buttons */
         .action-bar { margin-top: 20px; text-align: right; display: flex; justify-content: flex-end; gap: 15px; }
-
-        .btn-read {
-            color: #28a745; text-decoration: none; font-size: 0.9rem; font-weight: 700;
-            padding: 6px 12px; border-radius: 6px; transition: 0.2s; background: #e8f5e9;
-        }
-        .btn-read:hover { background: #28a745; color: white; }
 
         .btn-del {
             color: #dc3545; text-decoration: none; font-size: 0.9rem; font-weight: 700;
@@ -62,8 +53,7 @@
             .sender-email { display: block; margin-left: 0; margin-top: 2px; }
             .msg-date { align-self: flex-start; margin-top: 5px; font-size: 0.8rem; background: #eee; padding: 2px 8px; border-radius: 10px; }
 
-            .action-bar { justify-content: space-between; margin-top: 15px; }
-            .btn-read, .btn-del { flex: 1; text-align: center; }
+            .action-bar { justify-content: flex-end; margin-top: 15px; }
         }
     </style>
 </head>
@@ -81,7 +71,8 @@
     </div>
 
     <div class="msg-grid" th:if="${messages != null and !messages.empty}">
-        <div th:each="msg : ${messages}" class="msg-card" th:classappend="${!msg.read} ? 'unread'">
+        <div th:each="msg : ${messages}" class="msg-card">
+
             <div class="msg-header">
                 <div>
                     <span class="sender-name" th:text="${msg.name}">John Doe</span>
@@ -94,13 +85,11 @@
             <p class="msg-body" th:text="${msg.message}">I have a question about my order...</p>
 
             <div class="action-bar">
-                <a th:if="${!msg.read}" th:href="@{/admin/messages/read/{id}(id=${msg.id})}" class="btn-read">
-                    <i class="fas fa-check"></i> Mark Read
-                </a>
-                <a th:href="@{/admin/messages/delete/{id}(id=${msg.id})}" class="btn-del" onclick="return confirm('Delete message permanently?')">
+                <a th:href="@{/admin/messages/delete/{id}(id=${msg.id})}" class="btn-del">
                     <i class="fas fa-trash-alt"></i> Delete
                 </a>
             </div>
+
         </div>
     </div>
 </div>

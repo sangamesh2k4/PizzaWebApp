@@ -33,7 +33,7 @@
             background: #dc3545; padding: 8px 18px; border-radius: 6px;
             color: white !important; border: none; font-weight: bold;
             cursor: pointer; text-decoration: none; transition: 0.3s;
-            border-bottom: none !important;
+            font-family: inherit; font-size: 0.95rem;
         }
         .logout:hover { background: #c82333; }
 
@@ -91,12 +91,29 @@
         <a th:href="@{/admin/ratings}" th:classappend="${activePage == 'ratings'} ? 'active'">Ratings</a>
         <a th:href="@{/admin/coupons}" th:classappend="${activePage == 'coupons'} ? 'active'">Coupons</a>
         <a th:href="@{/admin/messages}" th:classappend="${activePage == 'messages'} ? 'active'">Messages</a>
-        <a th:href="@{/logout}" class="logout">Logout</a>
+
+        <button onclick="logout()" class="logout">Logout</button>
     </div>
 
     <script>
         function toggleAdminMenu() {
             document.getElementById('adminNavLinks').classList.toggle('active');
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch("/api/auth/logout", {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+                    window.location.href = "/login";
+                } else {
+                    console.error("Logout failed with status:", response.status);
+                }
+            } catch (error) {
+                console.error("Network error during logout:", error);
+            }
         }
     </script>
 </nav>
